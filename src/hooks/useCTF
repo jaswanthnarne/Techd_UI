@@ -1,0 +1,47 @@
+// hooks/useCTFStatus.js
+import { useState, useEffect } from 'react';
+
+export const useCTFStatus = (ctf) => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 30000); // Update every 30 seconds
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const calculateCTFStatus = () => {
+    if (!ctf) return { status: 'inactive', canAccess: false };
+
+    // Use backend status as base
+    const backendStatus = ctf.status?.toLowerCase();
+    
+    // If backend says not active, respect that
+    if (backendStatus !== 'active') {
+      return { 
+        status: backendStatus, 
+        canAccess: false,
+        reason: `CTF is ${backendStatus}`
+      };
+    }
+
+    // Check active hours
+    const isActiveHours = isWithinActiveHoursIST(
+      ctf.activeHours.startTime, 
+      ctf.activeHours.endTime
+    );
+
+    const canAccess = isActiveHours;
+    
+    return {
+      status: canAccess ? 'active' : 'inactive_hours',
+      canAccess,
+      isActiveHours,
+      reason: canAccess ? 'CTF is active' : 'Outside active hours'
+    };
+  };
+
+  return calculateCTFStatus();
+};
