@@ -1,72 +1,76 @@
 // components/forms/CTFForm.jsx
-import React, { useState, useEffect } from 'react';
-import Button from '../ui/Button';
-import { 
-  Calendar, 
-  Clock, 
+import React, { useState, useEffect } from "react";
+import Button from "../ui/Button";
+import {
+  Calendar,
+  Clock,
   Link as LinkIcon,
   Eye,
   EyeOff,
   Save,
-  X
-} from 'lucide-react';
+  X,
+} from "lucide-react";
 
 const CTFForm = ({ ctf, onSubmit, onCancel, loading }) => {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: 'Web Security',
-    points: 100,
-    difficulty: 'Easy',
+    title: "",
+    description: "",
+    category: "Web Security",
+    points: 10,
+    difficulty: "Easy",
     activeHours: {
-      startTime: '09:00',
-      endTime: '18:00',
-      timezone: 'UTC'
+      startTime: "09:00",
+      endTime: "18:00",
+      timezone: "UTC",
     },
     schedule: {
-      startDate: '',
-      endDate: '',
-      recurrence: 'once'
+      startDate: "",
+      endDate: "",
+      recurrence: "once",
     },
     maxAttempts: 1,
-    ctfLink: '',
+    ctfLink: "",
     isVisible: false,
     isPublished: false,
     rules: {
       requireScreenshot: false,
-      allowMultipleSubmissions: false
-    }
+      allowMultipleSubmissions: false,
+    },
   });
 
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    console.log('🚀 Loaded CTF for editing:', ctf);
+    console.log("🚀 Loaded CTF for editing:", ctf);
     if (ctf) {
       setFormData({
-        title: ctf.title || '',
-        description: ctf.description || '',
-        category: ctf.category || 'Web Security',
+        title: ctf.title || "",
+        description: ctf.description || "",
+        category: ctf.category || "Web Security",
         points: ctf.points || 100,
-        difficulty: ctf.difficulty || 'Easy',
+        difficulty: ctf.difficulty || "Easy",
         activeHours: ctf.activeHours || {
-          startTime: '09:00',
-          endTime: '18:00',
-          timezone: 'UTC'
+          startTime: "09:00",
+          endTime: "18:00",
+          timezone: "UTC",
         },
         schedule: {
-          startDate: ctf.schedule?.startDate ? new Date(ctf.schedule.startDate).toISOString().split('T')[0] : '',
-          endDate: ctf.schedule?.endDate ? new Date(ctf.schedule.endDate).toISOString().split('T')[0] : '',
-          recurrence: ctf.schedule?.recurrence || 'once'
+          startDate: ctf.schedule?.startDate
+            ? new Date(ctf.schedule.startDate).toISOString().split("T")[0]
+            : "",
+          endDate: ctf.schedule?.endDate
+            ? new Date(ctf.schedule.endDate).toISOString().split("T")[0]
+            : "",
+          recurrence: ctf.schedule?.recurrence || "once",
         },
         maxAttempts: ctf.maxAttempts || 1,
-        ctfLink: ctf.ctfLink || '',
+        ctfLink: ctf.ctfLink || "",
         isVisible: ctf.isVisible || false,
         isPublished: ctf.isPublished || false,
         rules: ctf.rules || {
           requireScreenshot: false,
-          allowMultipleSubmissions: false
-        }
+          allowMultipleSubmissions: false,
+        },
       });
     }
   }, [ctf]);
@@ -75,33 +79,33 @@ const CTFForm = ({ ctf, onSubmit, onCancel, loading }) => {
     const newErrors = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = "Title is required";
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
+      newErrors.description = "Description is required";
     }
 
     if (formData.points < 0) {
-      newErrors.points = 'Points must be positive';
+      newErrors.points = "Points must be positive";
     }
 
-   if (formData.schedule.startDate && formData.schedule.endDate) {
-  const startDate = new Date(formData.schedule.startDate);
-  const endDate = new Date(formData.schedule.endDate);
+    if (formData.schedule.startDate && formData.schedule.endDate) {
+      const startDate = new Date(formData.schedule.startDate);
+      const endDate = new Date(formData.schedule.endDate);
 
-  // ✅ Allow same date, only block if end < start
-  if (endDate < startDate) {
-    newErrors.schedule = 'End date cannot be before start date';
-  }
-}
+      // ✅ Allow same date, only block if end < start
+      if (endDate < startDate) {
+        newErrors.schedule = "End date cannot be before start date";
+      }
+    }
 
-if (formData.activeHours.startTime && formData.activeHours.endTime) {
-  // ✅ Must be different
-  if (formData.activeHours.startTime === formData.activeHours.endTime) {
-    newErrors.activeHours = 'Start time and end time cannot be the same';
-  }
-}
+    if (formData.activeHours.startTime && formData.activeHours.endTime) {
+      // ✅ Must be different
+      if (formData.activeHours.startTime === formData.activeHours.endTime) {
+        newErrors.activeHours = "Start time and end time cannot be the same";
+      }
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -109,57 +113,68 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       // Convert date strings to Date objects
       const submitData = {
         ...formData,
         schedule: {
           ...formData.schedule,
-          startDate: formData.schedule.startDate ? new Date(formData.schedule.startDate).toISOString() : '',
-          endDate: formData.schedule.endDate ? new Date(formData.schedule.endDate).toISOString() : ''
-        }
+          startDate: formData.schedule.startDate
+            ? new Date(formData.schedule.startDate).toISOString()
+            : "",
+          endDate: formData.schedule.endDate
+            ? new Date(formData.schedule.endDate).toISOString()
+            : "",
+        },
       };
-      
+
       onSubmit(submitData);
     }
   };
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     // Clear error when field is updated
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: ''
+        [field]: "",
       }));
     }
   };
 
   const handleNestedChange = (parent, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [parent]: {
         ...prev[parent],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
-  const categories = ['Web Security', 'Cryptography', 'Forensics', 'Reverse Engineering', 'Pwn', 'Misc'];
-  const difficulties = ['Easy', 'Medium', 'Hard', 'Expert'];
-  const recurrences = ['once', 'daily', 'weekly', 'monthly'];
+  const categories = [
+    "Web Security",
+    "Cryptography",
+    "Forensics",
+    "Reverse Engineering",
+    "Pwn",
+    "Misc",
+  ];
+  const difficulties = ["Easy", "Medium", "Hard", "Expert"];
+  const recurrences = ["once", "daily", "weekly", "monthly"];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
       <div className="grid grid-cols-1 gap-6">
         <h3 className="text-lg font-medium text-gray-900">Basic Information</h3>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Title *
@@ -167,9 +182,9 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
           <input
             type="text"
             value={formData.title}
-            onChange={(e) => handleChange('title', e.target.value)}
+            onChange={(e) => handleChange("title", e.target.value)}
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.title ? 'border-red-300' : 'border-gray-300'
+              errors.title ? "border-red-300" : "border-gray-300"
             }`}
             placeholder="Enter CTF title"
           />
@@ -184,10 +199,10 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
           </label>
           <textarea
             value={formData.description}
-            onChange={(e) => handleChange('description', e.target.value)}
+            onChange={(e) => handleChange("description", e.target.value)}
             rows={4}
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.description ? 'border-red-300' : 'border-gray-300'
+              errors.description ? "border-red-300" : "border-gray-300"
             }`}
             placeholder="Describe the CTF challenge"
           />
@@ -203,11 +218,13 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             </label>
             <select
               value={formData.category}
-              onChange={(e) => handleChange('category', e.target.value)}
+              onChange={(e) => handleChange("category", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
           </div>
@@ -219,10 +236,10 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="number"
               value={formData.points}
-              onChange={(e) => handleChange('points', parseInt(e.target.value))}
+              onChange={(e) => handleChange("points", parseInt(e.target.value))}
               min="0"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.points ? 'border-red-300' : 'border-gray-300'
+                errors.points ? "border-red-300" : "border-gray-300"
               }`}
             />
             {errors.points && (
@@ -236,11 +253,13 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             </label>
             <select
               value={formData.difficulty}
-              onChange={(e) => handleChange('difficulty', e.target.value)}
+              onChange={(e) => handleChange("difficulty", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {difficulties.map(difficulty => (
-                <option key={difficulty} value={difficulty}>{difficulty}</option>
+              {difficulties.map((difficulty) => (
+                <option key={difficulty} value={difficulty}>
+                  {difficulty}
+                </option>
               ))}
             </select>
           </div>
@@ -250,7 +269,7 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
       {/* Schedule */}
       <div className="grid grid-cols-1 gap-6">
         <h3 className="text-lg font-medium text-gray-900">Schedule</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -259,7 +278,9 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="date"
               value={formData.schedule.startDate}
-              onChange={(e) => handleNestedChange('schedule', 'startDate', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange("schedule", "startDate", e.target.value)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -271,7 +292,9 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="date"
               value={formData.schedule.endDate}
-              onChange={(e) => handleNestedChange('schedule', 'endDate', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange("schedule", "endDate", e.target.value)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -287,10 +310,12 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
           </label>
           <select
             value={formData.schedule.recurrence}
-            onChange={(e) => handleNestedChange('schedule', 'recurrence', e.target.value)}
+            onChange={(e) =>
+              handleNestedChange("schedule", "recurrence", e.target.value)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {recurrences.map(recurrence => (
+            {recurrences.map((recurrence) => (
               <option key={recurrence} value={recurrence}>
                 {recurrence.charAt(0).toUpperCase() + recurrence.slice(1)}
               </option>
@@ -302,7 +327,7 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
       {/* Active Hours */}
       <div className="grid grid-cols-1 gap-6">
         <h3 className="text-lg font-medium text-gray-900">Active Hours</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -311,7 +336,9 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="time"
               value={formData.activeHours.startTime}
-              onChange={(e) => handleNestedChange('activeHours', 'startTime', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange("activeHours", "startTime", e.target.value)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -323,7 +350,9 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="time"
               value={formData.activeHours.endTime}
-              onChange={(e) => handleNestedChange('activeHours', 'endTime', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange("activeHours", "endTime", e.target.value)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -334,7 +363,9 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             </label>
             <select
               value={formData.activeHours.timezone}
-              onChange={(e) => handleNestedChange('activeHours', 'timezone', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange("activeHours", "timezone", e.target.value)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="UTC">UTC</option>
@@ -352,8 +383,10 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
 
       {/* Additional Settings */}
       <div className="grid grid-cols-1 gap-6">
-        <h3 className="text-lg font-medium text-gray-900">Additional Settings</h3>
-        
+        <h3 className="text-lg font-medium text-gray-900">
+          Additional Settings
+        </h3>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -362,7 +395,9 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="number"
               value={formData.maxAttempts}
-              onChange={(e) => handleChange('maxAttempts', parseInt(e.target.value))}
+              onChange={(e) =>
+                handleChange("maxAttempts", parseInt(e.target.value))
+              }
               min="1"
               max="10"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -376,7 +411,7 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="url"
               value={formData.ctfLink}
-              onChange={(e) => handleChange('ctfLink', e.target.value)}
+              onChange={(e) => handleChange("ctfLink", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="https://example.com"
             />
@@ -388,30 +423,48 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
             <input
               type="checkbox"
               checked={formData.rules.requireScreenshot}
-              onChange={(e) => handleNestedChange('rules', 'requireScreenshot', e.target.checked)}
+              onChange={(e) =>
+                handleNestedChange(
+                  "rules",
+                  "requireScreenshot",
+                  e.target.checked
+                )
+              }
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="ml-2 text-sm text-gray-700">Require screenshot for submission</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Require screenshot for submission
+            </span>
           </label>
 
           <label className="flex items-center">
             <input
               type="checkbox"
               checked={formData.rules.allowMultipleSubmissions}
-              onChange={(e) => handleNestedChange('rules', 'allowMultipleSubmissions', e.target.checked)}
+              onChange={(e) =>
+                handleNestedChange(
+                  "rules",
+                  "allowMultipleSubmissions",
+                  e.target.checked
+                )
+              }
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="ml-2 text-sm text-gray-700">Allow multiple submissions after solving</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Allow multiple submissions after solving
+            </span>
           </label>
 
           <label className="flex items-center">
             <input
               type="checkbox"
               checked={formData.isVisible}
-              onChange={(e) => handleChange('isVisible', e.target.checked)}
+              onChange={(e) => handleChange("isVisible", e.target.checked)}
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="ml-2 text-sm text-gray-700">Make visible to users</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Make visible to users
+            </span>
           </label>
         </div>
       </div>
@@ -427,14 +480,14 @@ if (formData.activeHours.startTime && formData.activeHours.endTime) {
           <X className="h-4 w-4 mr-2" />
           Cancel
         </Button>
-        
+
         <Button
           type="submit"
           loading={loading}
           className="bg-blue-600 hover:bg-blue-700"
         >
           <Save className="h-4 w-4 mr-2" />
-          {ctf ? 'Update CTF' : 'Create CTF'}
+          {ctf ? "Update CTF" : "Create CTF"}
         </Button>
       </div>
     </form>

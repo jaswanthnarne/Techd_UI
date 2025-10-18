@@ -1,26 +1,39 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import { Eye, EyeOff, UserPlus, Shield, Mail } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import {
+  Eye,
+  EyeOff,
+  UserPlus,
+  Shield,
+  Mail,
+  Star,
+  Target,
+  Zap,
+  Cpu,
+  Network,
+  GraduationCap,
+  Building,
+} from "lucide-react";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    contactNumber: '',
-    specialization: 'Cybersecurity',
-    sem: '',
-    erpNumber: '',
-    collegeName: 'PIET',
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    contactNumber: "",
+    specialization: "Cybersecurity",
+    sem: "",
+    erpNumber: "",
+    collegeName: "PIET",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -28,63 +41,71 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
-    // Validation
-    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || 
-        !formData.sem || !formData.erpNumber || !formData.collegeName) {
-      setError('All required fields must be filled');
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword ||
+      !formData.sem ||
+      !formData.erpNumber ||
+      !formData.collegeName
+    ) {
+      setError("All required fields must be filled");
       setLoading(false);
       return;
     }
 
-    // Email domain validation
-    if (!formData.email.endsWith('@paruluniversity.ac.in')) {
-      setError('Only @paruluniversity.ac.in email addresses are allowed for registration');
+    if (!formData.email.endsWith("@paruluniversity.ac.in")) {
+      setError(
+        "Only @paruluniversity.ac.in email addresses are allowed for registration"
+      );
       setLoading(false);
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Password must be at least 8 characters long");
       setLoading(false);
       return;
     }
 
-    // Password complexity check
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/;
     if (!passwordRegex.test(formData.password)) {
-      setError('Password must contain uppercase, lowercase, number, and special character');
+      setError(
+        "Password must contain uppercase, lowercase, number, and special character"
+      );
       setLoading(false);
       return;
     }
 
     const { confirmPassword, ...submitData } = formData;
 
-    console.log('Submitting data:', submitData); // Debug log
+    console.log("Submitting data:", submitData);
 
     const result = await register(submitData);
-    
+
     if (result.success) {
-      navigate('/student');
+      navigate("/student");
     } else {
       setError(result.error);
     }
-    
+
     setLoading(false);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    // Auto-format email field to show domain suggestion
-    if (name === 'email' && value && !value.includes('@')) {
+
+    if (name === "email" && value && !value.includes("@")) {
       setFormData({
         ...formData,
         [name]: value,
@@ -98,302 +119,388 @@ const Register = () => {
   };
 
   const specializations = [
-    'Cybersecurity',
-    'Artificial Intelligence',
-    'Others'
+    "Cybersecurity",
+    "Artificial Intelligence",
+    "Others",
   ];
 
-  const semesters = ['3', '4', '5', '6', '7'];
+  const semesters = ["3", "4", "5", "6", "7"];
 
-  const collegeNames = [
-    "PIET",
-    "PIT",
-    "Other"
-  ];
+  const collegeNames = ["PIET", "PIT", "Other"];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-4xl">
-        <div className="flex justify-center">
-          <div className="flex items-center space-x-2">
-            <Shield className="h-12 w-12 text-primary-600" />
-            <span className="text-3xl font-bold text-gray-900">CTF Platform</span>
-          </div>
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Parul University Student Registration
-        </p>
-        
-        {/* Domain Notice */}
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-          <div className="flex items-center justify-center space-x-2 text-blue-800">
-            <Mail className="h-5 w-5" />
-            <span className="text-sm font-medium">
-              Only @paruluniversity.ac.in email addresses are allowed
-            </span>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl">
+        {/* Main Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left Side - Branding & Information */}
+          <div className="text-center lg:text-left space-y-8">
+            {/* Partnership Badge */}
+            <div className="inline-flex items-center space-x-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-blue-200 shadow-lg">
+              <div className="flex items-center space-x-2">
+                <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                  <Shield className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-sm font-semibold text-gray-700">
+                  TechDefence Labs
+                </span>
+              </div>
+              <div className="h-4 w-px bg-gray-300"></div>
+              <div className="flex items-center space-x-2">
+                <div className="h-8 w-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                  <Star className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-sm font-semibold text-gray-700">
+                  Parul University
+                </span>
+              </div>
+            </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-4xl">
-        <Card className="px-6 py-8 sm:px-8 lg:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="rounded-md bg-red-50 p-4 border border-red-200">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <Shield className="h-5 w-5 text-red-400" />
+            {/* Main Heading */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-center lg:justify-start space-x-4">
+                <div className="bg-gradient-to-br from-primary-600 to-blue-700 p-4 rounded-2xl shadow-2xl">
+                  <Cpu className="h-12 w-12 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
+                    CTF
+                    <span className="block text-2xl lg:text-3xl text-primary-600 font-bold mt-2">
+                      Platform
+                    </span>
+                  </h1>
+                </div>
+              </div>
+
+              <p className="text-xl text-gray-600 max-w-md mx-auto lg:mx-0 leading-relaxed">
+                Join the cybersecurity community and develop your skills through
+                real-world challenges and competitions.
+              </p>
+            </div>
+
+            {/* Benefits Grid */}
+            <div className="grid grid-cols-1 gap-4 max-w-md mx-auto lg:mx-0">
+              <div className="flex items-center space-x-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <GraduationCap className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700">
+                    University Verified
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Exclusive access for Parul University students
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <Target className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700">
+                    Real Challenges
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Hands-on cybersecurity exercises
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <Network className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700">
+                    Live Leaderboard
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Compete with fellow students
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Registration Form */}
+          <div className="flex justify-center">
+            <Card className="w-full max-w-2xl border-0 shadow-2xl rounded-3xl overflow-hidden">
+              {/* Form Header */}
+              <div className="bg-gradient-to-r from-slate-900 to-gray-800 px-8 py-8 text-center">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Student Registration
+                </h2>
+                <p className="text-gray-300 text-sm">
+                  Create your CTF Platform account
+                </p>
+              </div>
+
+              <Card.Content className="p-8">
+                {/* Domain Notice */}
+                <div className="mb-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-4">
+                  <div className="flex items-center space-x-3 text-blue-800">
+                    <Mail className="h-5 w-5" />
+                    <span className="text-sm font-semibold">
+                      Only @paruluniversity.ac.in email addresses are allowed
+                    </span>
                   </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">
-                      Registration Failed
-                    </h3>
-                    <div className="mt-2 text-sm text-red-700">
-                      <p>{error}</p>
+                </div>
+
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  {error && (
+                    <div className="rounded-xl bg-gradient-to-r from-red-50 to-orange-50 p-4 border-2 border-red-200">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          <Shield className="h-5 w-5 text-red-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-red-800">
+                            Registration Failed
+                          </h3>
+                          <div className="mt-1 text-sm text-red-700">
+                            <p>{error}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Personal Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Full Name *
+                      </label>
+                      <input
+                        name="fullName"
+                        type="text"
+                        required
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        University Email *
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <input
+                          name="email"
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={handleChange}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
+                          placeholder="username@paruluniversity.ac.in"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* Personal Information Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Full Name */}
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  required
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  placeholder="Enter your full name"
-                />
-              </div>
+                  {/* Contact Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Contact Number
+                      </label>
+                      <input
+                        name="contactNumber"
+                        type="tel"
+                        value={formData.contactNumber}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
 
-              {/* Email */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  University Email *
-                </label>
-                <div className="relative">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors pr-24"
-                    placeholder="username@paruluniversity.ac.in"
-                  />
-                </div>
-                <p className="mt-2 text-xs text-blue-600">
-                  Only Parul University email addresses are accepted
-                </p>
-              </div>
-            </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        ERP Number *
+                      </label>
+                      <input
+                        name="erpNumber"
+                        type="text"
+                        required
+                        value={formData.erpNumber}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
+                        placeholder="Enter your ERP Number"
+                      />
+                    </div>
+                  </div>
 
-            {/* Contact Information Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Contact Number */}
-              <div>
-                <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                  Contact Number
-                </label>
-                <input
-                  id="contactNumber"
-                  name="contactNumber"
-                  type="tel"
-                  value={formData.contactNumber}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  placeholder="Enter your phone number"
-                />
-              </div>
+                  {/* Academic Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        College *
+                      </label>
+                      <div className="relative">
+                        <Building className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <select
+                          name="collegeName"
+                          required
+                          value={formData.collegeName}
+                          onChange={handleChange}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white appearance-none"
+                        >
+                          {collegeNames.map((college) => (
+                            <option key={college} value={college}>
+                              {college}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-              {/* ERP Number */}
-              <div>
-                <label htmlFor="erpNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                  ERP Number *
-                </label>
-                <input
-                  id="erpNumber"
-                  name="erpNumber"
-                  type="text"
-                  required
-                  value={formData.erpNumber}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  placeholder="Enter your ERP Number"
-                />
-              </div>
-            </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Semester *
+                      </label>
+                      <select
+                        name="sem"
+                        required
+                        value={formData.sem}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
+                      >
+                        <option value="">Select Semester</option>
+                        {semesters.map((sem) => (
+                          <option key={sem} value={sem}>
+                            {sem}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-            {/* Academic Information Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* College Name */}
-              <div>
-                <label htmlFor="collegeName" className="block text-sm font-medium text-gray-700 mb-2">
-                  College Name *
-                </label>
-                <select
-                  id="collegeName"
-                  name="collegeName"
-                  required
-                  value={formData.collegeName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                >
-                  {collegeNames.map(college => (
-                    <option key={college} value={college}>{college}</option>
-                  ))}
-                </select>
-              </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Specialization *
+                      </label>
+                      <select
+                        name="specialization"
+                        required
+                        value={formData.specialization}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
+                      >
+                        {specializations.map((spec) => (
+                          <option key={spec} value={spec}>
+                            {spec}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
 
-              {/* Semester */}
-              <div>
-                <label htmlFor="sem" className="block text-sm font-medium text-gray-700 mb-2">
-                  Semester *
-                </label>
-                <select
-                  id="sem"
-                  name="sem"
-                  required
-                  value={formData.sem}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                >
-                  <option value="">Select Semester</option>
-                  {semesters.map(sem => (
-                    <option key={sem} value={sem}>{sem}</option>
-                  ))}
-                </select>
-              </div>
+                  {/* Password Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Password *
+                      </label>
+                      <div className="relative">
+                        <input
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          required
+                          value={formData.password}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white pr-12"
+                          placeholder="Enter your password"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-gray-400" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-400" />
+                          )}
+                        </button>
+                      </div>
+                      <p className="mt-2 text-xs text-gray-500">
+                        8+ chars with uppercase, lowercase, number & special
+                        character
+                      </p>
+                    </div>
 
-              {/* Specialization */}
-              <div>
-                <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
-                  Specialization *
-                </label>
-                <select
-                  id="specialization"
-                  name="specialization"
-                  required
-                  value={formData.specialization}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                >
-                  {specializations.map(spec => (
-                    <option key={spec} value={spec}>{spec}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Confirm Password *
+                      </label>
+                      <div className="relative">
+                        <input
+                          name="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          required
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white pr-12"
+                          placeholder="Confirm your password"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-4 w-4 text-gray-400" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-400" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Password Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Password */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Password *
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors pr-12"
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    loading={loading}
+                    className="w-full py-4 text-base font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-primary-600 to-blue-700 hover:from-primary-700 hover:to-blue-800 text-white transform hover:scale-105"
                   >
-                    {/* {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )} */}
-                  </button>
-                </div>
-                <p className="mt-2 text-xs text-gray-500">
-                  Must be at least 8 characters with uppercase, lowercase, number, and special character
-                </p>
-              </div>
+                    <UserPlus className="h-5 w-5 mr-3" />
+                    <Zap className="h-5 w-5 mr-2" />
+                    Create University Account
+                  </Button>
 
-              {/* Confirm Password */}
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password *
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    required
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors pr-12"
-                    placeholder="Confirm your password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {/* {showConfirmPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )} */}
-                  </button>
-                </div>
-              </div>
-            </div>
+                  {/* Login Link */}
+                  <div className="text-center pt-6 border-t border-gray-200">
+                    <span className="text-sm text-gray-600">
+                      Already have an account?{" "}
+                      <Link
+                        to="/student/login"
+                        className="font-semibold text-primary-600 hover:text-primary-500 transition-colors"
+                      >
+                        Sign in here
+                      </Link>
+                    </span>
+                  </div>
+                </form>
+              </Card.Content>
+            </Card>
+          </div>
+        </div>
 
-            {/* Submit Button */}
-            <div className="pt-4">
-              <Button
-                type="submit"
-                loading={loading}
-                className="w-full flex items-center justify-center space-x-3 py-3 text-base font-medium"
-                size="lg"
-              >
-                <UserPlus className="h-5 w-5" />
-                <span>Create University Account</span>
-              </Button>
-            </div>
-
-            {/* Login Link */}
-            <div className="text-center pt-4 border-t border-gray-200">
-              <span className="text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link
-                  to="/student/login"
-                  className="font-medium text-primary-600 hover:text-primary-500 transition-colors"
-                >
-                  Sign in here
-                </Link>
-              </span>
-            </div>
-          </form>
-        </Card>
+        {/* Footer */}
+        <div className="mt-12 text-center">
+          <p className="text-sm text-gray-500">
+            © 2025 CTF Platform. A collaboration between TechDefence Labs and
+            Parul University.
+            <br />
+            All rights reserved. Built for cybersecurity education and
+            innovation.
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, Search, Trophy } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { userAPI } from '../../services/user';
+import React, { useState, useEffect } from "react";
+import { Bell, Search, Trophy } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { userAPI } from "../../services/user";
 
 const StudentHeader = ({ title, subtitle }) => {
   const { user } = useAuth();
@@ -11,21 +11,19 @@ const StudentHeader = ({ title, subtitle }) => {
     const fetchUserPoints = async () => {
       try {
         const response = await userAPI.getDashboard();
-        console.log('Dashboard response:', response.data);
-        
+
         // Access points from the correct path based on your API response
         const userPoints = response.data.stats?.submissions?.totalPoints || 0;
-        console.log('User points:', userPoints);
         setPoints(userPoints);
       } catch (error) {
-        console.error('Failed to fetch user points:', error);
+        console.error("Failed to fetch user points:", error);
         // Fallback to user points from auth context if available
         if (user?.points) {
           setPoints(user.points);
         }
       }
     };
-    
+
     fetchUserPoints();
   }, [user]);
 
@@ -39,7 +37,7 @@ const StudentHeader = ({ title, subtitle }) => {
               <p className="mt-1 text-sm text-gray-600">{subtitle}</p>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {/* Points Display */}
             <div className="flex items-center space-x-2 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
