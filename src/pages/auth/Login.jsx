@@ -52,7 +52,7 @@ const Login = () => {
           toast.success("Login successful!");
           navigate("/student");
         } else {
-          toast.error(result.error || "Login failed");
+          toast.error("Invalid username or password");
         }
       }
     } catch (error) {
