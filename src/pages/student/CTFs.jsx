@@ -396,6 +396,21 @@ const CTFs = () => {
                     <span>80+ Challenges</span>
                   </div>
                   <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                  <div className="flex items-center space-x-2 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl px-4 py-2 shadow-lg animate-pulse">
+                    <Zap className="h-5 w-5 text-green-600 animate-bounce" />
+                    <span className="text-sm font-bold text-green-800">
+                      {
+                        ctfs.filter((ctf) => {
+                          const { status, isCurrentlyActive } =
+                            calculateCurrentStatus(ctf);
+                          return status === "active" && isCurrentlyActive;
+                        }).length
+                      }
+                      <span className="ml-1 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                        LIVE BATTLES
+                      </span>
+                    </span>
+                  </div>
                   <div className="flex items-center space-x-2">
                     <Award className="h-4 w-4 text-purple-500" />
                     <span>1000+ Points Awarded</span>
