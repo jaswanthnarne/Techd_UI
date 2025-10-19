@@ -33,7 +33,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!credentials.email || !credentials.password){
+      toast.error("Please enter both email and password");
+      return;
+    }
     setLoading(true);
+     
 
     try {
       let result;

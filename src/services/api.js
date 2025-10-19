@@ -75,12 +75,12 @@ api.interceptors.response.use(
       localStorage.removeItem('adminUser');
       localStorage.removeItem('user');
       
-      // Redirect based on current path
-      if (window.location.pathname.includes('/admin')) {
-        window.location.href = '/admin/login';
-      } else {
-        window.location.href = '/login';
-      }
+      // // Redirect based on current path
+      // if (window.location.pathname.includes('/admin')) {
+      //   window.location.href = '/admin/login';
+      // } else {
+      //   window.location.href = '/login';
+      // }
     }
     
     return Promise.reject(error);
