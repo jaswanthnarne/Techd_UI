@@ -1112,6 +1112,7 @@ const CTFSubmission = () => {
       setLoading(true);
       const ctfResponse = await userCTFAPI.getCTF(id);
       const ctfData = ctfResponse.data.ctf;
+      console.log("Submission CFT : ", ctfData)
       setCtf(ctfData);
 
       try {
