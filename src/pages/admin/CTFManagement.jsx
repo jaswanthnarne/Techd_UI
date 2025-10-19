@@ -2876,8 +2876,7 @@ const CTFManagement = () => {
                                         Active Hours:
                                       </span>
                                       <span className="font-medium text-gray-900">
-                                        {ctf.activeHours.startTime} -{" "}
-                                        {ctf.activeHours.endTime}
+                                        {ctf.activeHours.startTime} - {ctf.activeHours.endTime} ({ctf.activeHours.timezone || 'Asia/Kolkata'})
                                       </span>
                                     </p>
                                   </div>

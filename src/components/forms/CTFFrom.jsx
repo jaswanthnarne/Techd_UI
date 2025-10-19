@@ -21,7 +21,7 @@ const CTFForm = ({ ctf, onSubmit, onCancel, loading }) => {
     activeHours: {
       startTime: "09:00",
       endTime: "18:00",
-      timezone: "UTC",
+      timezone: "Asia/Kolkata",
     },
     schedule: {
       startDate: "",
@@ -368,10 +368,10 @@ const CTFForm = ({ ctf, onSubmit, onCancel, loading }) => {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="UTC">UTC</option>
-              <option value="EST">EST</option>
-              <option value="PST">PST</option>
-              <option value="CST">CST</option>
+             <option value="Asia/Kolkata">IST (Asia/Kolkata)</option>
+  <option value="UTC">UTC</option>
+  <option value="America/New_York">EST</option>
+  <option value="America/Los_Angeles">PST</option>
             </select>
           </div>
         </div>
