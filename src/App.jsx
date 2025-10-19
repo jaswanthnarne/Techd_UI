@@ -26,6 +26,7 @@ import CTFDetail from "./pages/student/CTFDetail";
 import Profile from "./pages/student/Profile";
 import Leaderboard from "./pages/student/Leaderboard";
 import Help from "./pages/student/Help";
+import MyScreenshots from "./pages/student/MyScreenShots";
 
 // Auth Pages
 import Login from "./pages/auth/Login";
@@ -241,6 +242,14 @@ function App() {
               element={
                 <StudentRoute>
                   <Profile />
+                </StudentRoute>
+              }
+            />
+             <Route
+              path="/student/allscreenshot"
+              element={
+                <StudentRoute>
+                 <MyScreenshots/>
                 </StudentRoute>
               }
             />

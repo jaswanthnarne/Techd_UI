@@ -18,6 +18,21 @@ export const userCTFAPI = {
   // Get user's submissions
   getMySubmissions: (params = {}) => 
     api.get('/user/my-submissions', { params }),
+
+
+  // Get all CTFs with user's submissions and screenshots
+  getMyCTFsWithSubmissions: (params = {}) =>
+    api.get("/ctf/my-ctfs-with-submissions", { params }),
+
+  // Get all submissions with screenshots
+  getMyScreenshots: (params = {}) => api.get("/ctf/my-screenshots", { params }),
+
+  // Get submission screenshot details
+  getSubmissionScreenshot: (submissionId) =>
+    api.get(`/ctf/submissions/${submissionId}/screenshot`),
+
+  // Get all CTFs with progress and submission status
+  getMyProgress: (params = {}) => api.get("/ctf/my-progress", { params }),
 };
 
 // Student profile and stats
