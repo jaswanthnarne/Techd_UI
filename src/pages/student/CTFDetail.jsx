@@ -434,102 +434,134 @@ const CTFDetail = () => {
         )}
 
         {/* Mission Log */}
-        <Card className="border-0 shadow-xl">
-          <Card.Header className="pb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Sword className="h-6 w-6 text-blue-600" />
-                <h3 className="text-xl font-bold text-gray-900">Mission Log</h3>
-              </div>
-              <Link to={`/student/ctf/${ctf._id}/submit`}>
-                <Button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:shadow-lg">
-                  <Upload className="h-4 w-4" />
-                  <span>Submit Evidence</span>
-                </Button>
-              </Link>
-            </div>
-          </Card.Header>
-          <Card.Content>
-            {submissions.length > 0 ? (
-              <div className="space-y-4">
-                {submissions.map((submission, index) => (
-                  <div
-                    key={submission._id}
-                    className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border border-gray-200 hover:border-blue-200 transition-all"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className={`p-3 rounded-xl ${
-                          submission.isCorrect
-                            ? "bg-gradient-to-r from-green-100 to-emerald-100 text-green-600"
-                            : "bg-gradient-to-r from-red-100 to-pink-100 text-red-600"
-                        }`}
-                      >
-                        {submission.isCorrect ? (
-                          <CheckCircle className="h-5 w-5" />
-                        ) : (
-                          <XCircle className="h-5 w-5" />
-                        )}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">
-                          Engagement #{submissions.length - index}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center space-x-2">
-                          <Clock className="h-3 w-3" />
-                          <span>
-                            {new Date(submission.submittedAt).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold ${
-                          submission.isCorrect
-                            ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
-                            : "bg-gradient-to-r from-red-500 to-pink-500 text-white"
-                        }`}
-                      >
-                        {submission.isCorrect ? (
-                          <>
-                            <Sparkles className="h-3 w-3 mr-1" />+
-                            {submission.points}
-                          </>
-                        ) : (
-                          "Failed"
-                        )}
-                      </span>
-                    </div>
+        {/* Mission Log */}
+<Card className="border-0 shadow-xl">
+  <Card.Header className="pb-4">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-3">
+        <Sword className="h-6 w-6 text-blue-600" />
+        <h3 className="text-xl font-bold text-gray-900">Mission Log</h3>
+      </div>
+      <Link to={`/student/ctf/${ctf._id}/submit`}>
+        <Button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:shadow-lg">
+          <Upload className="h-4 w-4" />
+          <span>Submit Evidence</span>
+        </Button>
+      </Link>
+    </div>
+  </Card.Header>
+  <Card.Content>
+    {submissions.length > 0 ? (
+      <div className="space-y-4">
+        {submissions.map((submission, index) => {
+          // Status configuration based on submissionStatus
+          const statusConfig = {
+            pending: {
+              color:
+                "bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800",
+              borderColor: "border-yellow-200",
+              icon: Clock,
+              label: "Under Review",
+              badgeColor:
+                "bg-gradient-to-r from-yellow-500 to-amber-500 text-white",
+            },
+            approved: {
+              color:
+                "bg-gradient-to-r from-green-100 to-emerald-100 text-green-800",
+              borderColor: "border-green-200",
+              icon: CheckCircle,
+              label: "Approved",
+              badgeColor:
+                "bg-gradient-to-r from-green-500 to-emerald-500 text-white",
+            },
+            rejected: {
+              color:
+                "bg-gradient-to-r from-red-100 to-pink-100 text-red-800",
+              borderColor: "border-red-200",
+              icon: XCircle,
+              label: "Rejected",
+              badgeColor:
+                "bg-gradient-to-r from-red-500 to-pink-500 text-white",
+            },
+          };
+
+          const config =
+            statusConfig[submission.submissionStatus] ||
+            statusConfig.pending;
+          const StatusIcon = config.icon;
+
+          return (
+            <div
+              key={submission._id}
+              className={`flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border ${config.borderColor} hover:border-blue-200 transition-all`}
+            >
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 rounded-xl ${config.color}`}>
+                  <StatusIcon className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">
+                    Engagement #{submissions.length - index}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="flex justify-center mb-4">
-                  <div className="p-4 bg-gradient-to-r from-gray-100 to-slate-100 rounded-2xl">
-                    <Flag className="h-16 w-16 text-gray-400" />
+                  <div className="text-sm text-gray-500 flex items-center space-x-2">
+                    <Clock className="h-3 w-3" />
+                    <span>
+                      {new Date(
+                        submission.submittedAt
+                      ).toLocaleString()}
+                    </span>
                   </div>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                  No Mission Logs
-                </h4>
-                <p className="text-gray-600 mb-6">
-                  Your engagement history will appear here
-                </p>
-                {canSubmit && (
-                  <Button
-                    onClick={() => setShowSubmitModal(true)}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 border-0 hover:shadow-lg"
-                  >
-                    <Flag className="h-4 w-4 mr-2" />
-                    Initiate First Engagement
-                  </Button>
-                )}
               </div>
-            )}
-          </Card.Content>
-        </Card>
+              <div className="text-right space-y-2">
+                <span
+                  className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold ${config.badgeColor}`}
+                >
+                  {config.label}
+                </span>
+                {submission.submissionStatus === "approved" &&
+                  submission.points > 0 && (
+                    <div className="text-sm font-semibold text-green-600">
+                      +{submission.points} points
+                    </div>
+                  )}
+                {submission.submissionStatus === "rejected" &&
+                  submission.adminFeedback && (
+                    <div className="text-xs text-red-600 max-w-xs">
+                      {submission.adminFeedback}
+                    </div>
+                  )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <div className="text-center py-12">
+        <div className="flex justify-center mb-4">
+          <div className="p-4 bg-gradient-to-r from-gray-100 to-slate-100 rounded-2xl">
+            <Flag className="h-16 w-16 text-gray-400" />
+          </div>
+        </div>
+        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+          No Mission Logs
+        </h4>
+        <p className="text-gray-600 mb-6">
+          Your engagement history will appear here
+        </p>
+        {canSubmit && (
+          <Button
+            onClick={() => setShowSubmitModal(true)}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 border-0 hover:shadow-lg"
+          >
+            <Flag className="h-4 w-4 mr-2" />
+            Initiate First Engagement
+          </Button>
+        )}
+      </div>
+    )}
+  </Card.Content>
+</Card>
       </div>
 
       {/* Submit Flag Modal */}

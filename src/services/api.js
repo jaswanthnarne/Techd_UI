@@ -13,18 +13,18 @@ const api = axios.create({
 // Request interceptor with debugging
 api.interceptors.request.use(
   (config) => {
-    console.log('🚀 API Request:', {
-      url: config.url,
-      method: config.method,
-      headers: config.headers
-    });
+    // console.log('🚀 API Request:', {
+    //   url: config.url,
+    //   method: config.method,
+    //   headers: config.headers
+    // });
 
     // For admin routes
     if (config.url.includes('/admin/')) {
       const adminToken = localStorage.getItem('adminToken');
       if (adminToken) {
         config.headers.Authorization = `Bearer ${adminToken}`;
-        console.log('🔐 Added admin token to request');
+        // console.log('🔐 Added admin token to request');
       } else {
         console.log('❌ No admin token found for admin route');
       }
@@ -33,7 +33,7 @@ api.interceptors.request.use(
       const studentToken = localStorage.getItem('token') || localStorage.getItem('userToken');
       if (studentToken) {
         config.headers.Authorization = `Bearer ${studentToken}`;
-        console.log('🔐 Added student token to request');
+        // console.log('🔐 Added student token to request');
       } else {
         console.log('❌ No student token found for student route');
       }
@@ -50,11 +50,11 @@ api.interceptors.request.use(
 // Response interceptor with debugging
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ API Response Success:', {
-      url: response.config.url,
-      status: response.status,
-      data: response.data
-    });
+    // console.log('✅ API Response Success:', {
+    //   url: response.config.url,
+    //   status: response.status,
+    //   data: response.data
+    // });
     return response;
   },
   (error) => {

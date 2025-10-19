@@ -29,16 +29,16 @@ export const AuthProvider = ({ children }) => {
       const studentToken = localStorage.getItem('token');
       const userToken = localStorage.getItem('userToken'); // legacy
       
-      console.log('🔐 Auth Check - Tokens found:', {
-        adminToken: !!adminToken,
-        studentToken: !!studentToken,
-        userToken: !!userToken
-      });
+      // console.log('🔐 Auth Check - Tokens found:', {
+      //   adminToken: !!adminToken,
+      //   studentToken: !!studentToken,
+      //   userToken: !!userToken
+      // });
 
       if (adminToken) {
-        console.log('🛠️ Checking admin authentication...');
+        // console.log('🛠️ Checking admin authentication...');
         const response = await adminAuth.getProfile();
-        console.log('✅ Admin auth successful:', response.data);
+        // console.log('✅ Admin auth successful:', response.data);
         
         const adminUser = response.data.admin || response.data.user || response.data;
         setUser(adminUser);
@@ -48,18 +48,18 @@ export const AuthProvider = ({ children }) => {
       } else if (studentToken || userToken) {
         // Use whichever token exists
         const token = studentToken || userToken;
-        console.log('🛠️ Checking student authentication...');
+        // console.log('🛠️ Checking student authentication...');
         
         const response = await authAPI.getProfile();
-        console.log('✅ Student auth successful:', response.data);
+        // console.log('✅ Student auth successful:', response.data);
         
         const studentUser = response.data.user || response.data;
         setUser(studentUser);
         setIsAuthenticated(true);
         setUserType('student');
-        console.log('👤 Student user set:', studentUser);
+        // console.log('👤 Student user set:', studentUser);
       } else {
-        console.log('❌ No authentication tokens found');
+        // console.log('❌ No authentication tokens found');
         setIsAuthenticated(false);
         setUserType(null);
       }
@@ -83,9 +83,9 @@ export const AuthProvider = ({ children }) => {
 
   const adminLogin = async (credentials) => {
     try {
-      console.log('🛠️ Attempting admin login with:', credentials);
+      // console.log('🛠️ Attempting admin login with:', credentials);
       const response = await adminAuth.login(credentials);
-      console.log('✅ Admin login response:', response);
+      // console.log('✅ Admin login response:', response);
       
       const { admin, user, token } = response.data;
       const adminUser = admin || user;
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error('No token received from server');
       }
       
-      console.log('💾 Storing admin token and user data');
+      // console.log('💾 Storing admin token and user data');
       localStorage.setItem('adminToken', token);
       localStorage.setItem('adminUser', JSON.stringify(adminUser));
       
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setUserType('admin');
       
-      console.log('✅ Admin login successful');
+      // console.log('✅ Admin login successful');
       return { success: true, user: adminUser };
     } catch (error) {
       console.error('❌ Admin login failed:', error);
@@ -115,9 +115,9 @@ export const AuthProvider = ({ children }) => {
 
   const studentLogin = async (credentials) => {
     try {
-      console.log('🛠️ Attempting student login with:', credentials);
+      // console.log('🛠️ Attempting student login with:', credentials);
       const response = await authAPI.login(credentials);
-      console.log('✅ Student login response:', response);
+      // console.log('✅ Student login response:', response);
       
       const { user, token } = response.data;
       
@@ -125,7 +125,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error('No token received from server');
       }
       
-      console.log('💾 Storing student token and user data');
+      // console.log('💾 Storing student token and user data');
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       
@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setUserType('student');
       
-      console.log('✅ Student login successful');
+      // console.log('✅ Student login successful');
       return { success: true, user };
     } catch (error) {
       console.error('❌ Student login failed:', error);
@@ -146,7 +146,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      console.log('🛠️ Logging out user type:', userType);
+      // console.log('🛠️ Logging out user type:', userType);
       if (userType === 'admin') {
         await adminAuth.logout();
       } else {
@@ -165,7 +165,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       setUserType(null);
-      console.log('✅ Logout completed');
+      // console.log('✅ Logout completed');
     }
   };
 
