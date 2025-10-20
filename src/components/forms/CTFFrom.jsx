@@ -41,7 +41,7 @@ const CTFForm = ({ ctf, onSubmit, onCancel, loading }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    console.log("🚀 Loaded CTF for editing:", ctf);
+    // console.log("🚀 Loaded CTF for editing:", ctf);
     if (ctf) {
       setFormData({
         title: ctf.title || "",

@@ -89,7 +89,7 @@ const Register = () => {
 
     const { confirmPassword, ...submitData } = formData;
 
-    console.log("Submitting data:", submitData);
+    // console.log("Submitting data:", submitData);
 
     const result = await register(submitData);
 

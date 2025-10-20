@@ -1635,7 +1635,7 @@ const CTFManagement = () => {
     try {
       setLoading(true);
       const response = await ctfAPI.getAllCTFs();
-      console.log("Fetched CTFs:", response.data.ctfs);
+      // console.log("Fetched CTFs:", response.data.ctfs);
       setCtfs(response.data.ctfs);
     } catch (error) {
       toast.error("Failed to fetch CTFs");

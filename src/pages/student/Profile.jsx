@@ -52,7 +52,7 @@ const Profile = () => {
     try {
       setLoading(true);
       const response = await userAPI.getProfile();
-      console.log("Fetched profile:", response.data.user);
+      // console.log("Fetched profile:", response.data.user);
       setProfile(response.data.user);
       setFormData(response.data.user);
     } catch (error) {

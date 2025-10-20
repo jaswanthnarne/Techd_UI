@@ -317,11 +317,11 @@ const ResetPassword = () => {
 
     try {
       setLoading(true);
-      console.log("🔄 Sending reset request with token:", token);
+      // console.log("🔄 Sending reset request with token:", token);
 
       const response = await authAPI.resetPassword(token, formData.newPassword);
 
-      console.log("✅ Reset successful:", response.data);
+      // console.log("✅ Reset successful:", response.data);
       toast.success(
         "Password reset successfully! You can now login with your new password."
       );
