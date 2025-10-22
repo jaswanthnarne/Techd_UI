@@ -33,14 +33,14 @@ const AdminSubmissions = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
-  // const [actionLoading, setActionLoading] = useState(false);'
-  consr [actionLoading,setActionLoading] = useState({
-
-  })
-  const [pagination, setPagination] = useState({
-    approve:false,
-    reject:false
+  // const [actionLoading, setActionLoading] = useState(false);
+  // To this:
+  const [actionLoading, setActionLoading] = useState({
+    approve: false,
+    reject: false,
   });
+
+  const [pagination, setPagination] = useState({});
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -104,12 +104,12 @@ const AdminSubmissions = () => {
       toast.error("Failed to fetch submission details");
     }
   };
-
+  // And update the handleApprove function:
   const handleApprove = async (feedback = "", points = null) => {
     if (!selectedSubmission) return;
 
     try {
-      setActionLoading((prev)=> ({...prev ,approve:true}));
+      setActionLoading((prev) => ({ ...prev, approve: true }));
       const data = {};
       if (feedback) data.feedback = feedback;
       if (points !== null) data.points = points;
@@ -124,10 +124,11 @@ const AdminSubmissions = () => {
         error.response?.data?.error || "Failed to approve submission"
       );
     } finally {
-      setActionLoading((prev)=> ({...prev , approve : false}));
+      setActionLoading((prev) => ({ ...prev, approve: false }));
     }
   };
 
+  // And update the handleReject function:
   const handleReject = async (feedback) => {
     if (!selectedSubmission || !feedback.trim()) {
       toast.error("Feedback is required for rejection");
@@ -135,7 +136,7 @@ const AdminSubmissions = () => {
     }
 
     try {
-      setActionLoading((prev)=> ({...prev,reject:true}));
+      setActionLoading((prev) => ({ ...prev, reject: true }));
       await submissionAdminAPI.rejectSubmission(selectedSubmission._id, {
         feedback,
       });
@@ -146,7 +147,7 @@ const AdminSubmissions = () => {
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to reject submission");
     } finally {
-      setActionLoading((prev)=>({...prev , reject:false}));
+      setActionLoading((prev) => ({ ...prev, reject: false }));
     }
   };
 
@@ -800,41 +801,41 @@ const ReviewModal = ({
           </Card>
         )}
 
-       {/* Actions */}
-<div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-  <Button
-    onClick={onClose}
-    variant="outline"
-    disabled={loading.approve || loading.reject}
-    className="border-2 px-8 py-3 text-lg"
-  >
-    Cancel Review
-  </Button>
+        {/* Actions */}
+        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+          <Button
+            onClick={onClose}
+            variant="outline"
+            disabled={loading.approve || loading.reject}
+            className="border-2 px-8 py-3 text-lg"
+          >
+            Cancel Review
+          </Button>
 
-  {submission.submissionStatus === "pending" && (
-    <>
-      <Button
-        onClick={handleReject}
-        loading={loading.reject}
-        disabled={!feedback.trim() || loading.approve}
-        variant="outline"
-        className="border-2 border-red-300 text-red-700 hover:bg-red-50 px-8 py-3 text-lg"
-      >
-        <XCircle className="h-5 w-5 mr-2" />
-        Mission Failed
-      </Button>
-      <Button
-        onClick={handleApprove}
-        loading={loading.approve}
-        disabled={loading.reject}
-        className="bg-gradient-to-r from-green-600 to-emerald-600 border-0 hover:shadow-lg px-8 py-3 text-lg"
-      >
-        <CheckCircle className="h-5 w-5 mr-2" />
-        Mission Success
-      </Button>
-    </>
-  )}
-</div>
+          {submission.submissionStatus === "pending" && (
+            <>
+              <Button
+                onClick={handleReject}
+                loading={loading.reject}
+                disabled={!feedback.trim() || loading.approve}
+                variant="outline"
+                className="border-2 border-red-300 text-red-700 hover:bg-red-50 px-8 py-3 text-lg"
+              >
+                <XCircle className="h-5 w-5 mr-2" />
+                Mission Failed
+              </Button>
+              <Button
+                onClick={handleApprove}
+                loading={loading.approve}
+                disabled={loading.reject}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 border-0 hover:shadow-lg px-8 py-3 text-lg"
+              >
+                <CheckCircle className="h-5 w-5 mr-2" />
+                Mission Success
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </Modal>
   );
