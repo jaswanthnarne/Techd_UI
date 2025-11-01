@@ -106,7 +106,7 @@ const handleSubmit = async (e) => {
     return;
   }
 
-  const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*(),.?":{}|<>])/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/;
   if (!passwordRegex.test(formData.password)) {
     setError("Password must contain uppercase, lowercase, number, and special character");
     setLoading(false);
