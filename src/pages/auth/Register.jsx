@@ -123,11 +123,21 @@ const handleSubmit = async (e) => {
       navigate("/student");
     } else {
       console.error("Registration failed:", result);
-      setError(result.error);
+      setError(result.message || result.error || "Registration failed");
     }
   } catch (err) {
-    setError("Registration failed. Please try again.");
     console.error("Registration error:", err);
+    
+    // ✅ FIX: Handle different types of errors properly
+    if (err.response && err.response.data) {
+      const errorData = err.response.data;
+      // Use the specific errsor message from backend
+      setError(errorData.message || errorData.error || "Registration failed");
+    } else if (err.message) {
+      setError(err.message);
+    } else {
+      setError("Registration failed. Please try again.");
+    }
   } finally {
     setLoading(false);
   }

@@ -147,6 +147,15 @@ export const AuthProvider = ({ children }) => {
   const register = async (data) => {
     try {
       const response = await authAPI.register(data);
+
+      if (response.data.success === false) {
+      // Return the error from backend
+      return {
+        success: false,
+        error: response.data.error,
+        message: response.data.message
+      };
+    }
       const { user, token } = response.data;
 
       localStorage.setItem("userToken", token);
@@ -158,10 +167,19 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, user };
     } catch (error) {
+      if (error.response && error.response.data) {
+      const errorData = error.response.data;
       return {
         success: false,
-        error: error.response?.data?.error || "Registration failed",
+        error: errorData.error,
+        message: errorData.message,
+        validationErrors: errorData.validationErrors
       };
+    }
+     return {
+      success: false,
+      error: error.message || 'Registration failed'
+    };
     }
   };  
 
