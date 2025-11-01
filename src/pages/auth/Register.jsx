@@ -115,13 +115,14 @@ const handleSubmit = async (e) => {
 
   const { confirmPassword, ...submitData } = formData;
 
-  console.log("Submitting data:", submitData);
+
 
   try {
     const result = await register(submitData);
     if (result.success) {
       navigate("/student");
     } else {
+      console.error("Registration failed:", result);
       setError(result.error);
     }
   } catch (err) {
