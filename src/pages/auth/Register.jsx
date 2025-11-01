@@ -38,85 +38,139 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+// Add these validation functions in your Register component
+const validateERPNumber = (erpNumber) => {
+  const erpRegex = /^\d+$/;
+  return erpRegex.test(erpNumber);
+};
 
-    if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.password ||
-      !formData.confirmPassword ||
-      !formData.sem ||
-      !formData.erpNumber ||
-      !formData.collegeName
-    ) {
-      setError("All required fields must be filled");
-      setLoading(false);
-      return;
-    }
+const validateContactNumber = (contactNumber) => {
+  if (!contactNumber) return true; // Optional field
+  const phoneRegex = /^\d+$/;
+  return phoneRegex.test(contactNumber);
+};
 
-    if (!formData.email.endsWith("@paruluniversity.ac.in")) {
-      setError(
-        "Only @paruluniversity.ac.in email addresses are allowed for registration"
-      );
-      setLoading(false);
-      return;
-    }
+// Update the handleSubmit function
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
+  // Validate required fields
+  if (
+    !formData.fullName ||
+    !formData.email ||
+    !formData.password ||
+    !formData.confirmPassword ||
+    !formData.sem ||
+    !formData.erpNumber ||
+    !formData.collegeName
+  ) {
+    setError("All required fields must be filled");
+    setLoading(false);
+    return;
+  }
 
-    if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
-      setLoading(false);
-      return;
-    }
+  // Validate email domain
+  if (!formData.email.endsWith("@paruluniversity.ac.in")) {
+    setError("Only @paruluniversity.ac.in email addresses are allowed");
+    setLoading(false);
+    return;
+  }
 
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/;
-    if (!passwordRegex.test(formData.password)) {
-      setError(
-        "Password must contain uppercase, lowercase, number, and special character"
-      );
-      setLoading(false);
-      return;
-    }
+  // Validate ERP number (numbers only)
+  if (!validateERPNumber(formData.erpNumber)) {
+    setError("ERP Number must contain only numbers");
+    setLoading(false);
+    return;
+  }
 
-    const { confirmPassword, ...submitData } = formData;
+  // Validate contact number (numbers only)
+  if (formData.contactNumber && !validateContactNumber(formData.contactNumber)) {
+    setError("Contact Number must contain only numbers");
+    setLoading(false);
+    return;
+  }
 
-    // console.log("Submitting data:", submitData);
+  // Validate password match
+  if (formData.password !== formData.confirmPassword) {
+    setError("Passwords do not match");
+    setLoading(false);
+    return;
+  }
 
+  // Validate password strength
+  if (formData.password.length < 8) {
+    setError("Password must be at least 8 characters long");
+    setLoading(false);
+    return;
+  }
+
+  const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*(),.?":{}|<>])/;
+  if (!passwordRegex.test(formData.password)) {
+    setError("Password must contain uppercase, lowercase, number, and special character");
+    setLoading(false);
+    return;
+  }
+
+  const { confirmPassword, ...submitData } = formData;
+
+  console.log("Submitting data:", submitData);
+
+  try {
     const result = await register(submitData);
-
     if (result.success) {
       navigate("/student");
     } else {
       setError(result.error);
     }
-
+  } catch (err) {
+    setError("Registration failed. Please try again.");
+    console.error("Registration error:", err);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+// Update the handleChange function with real-time validation
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-    if (name === "email" && value && !value.includes("@")) {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    } else {
+  // ERP Number validation - only numbers
+  if (name === "erpNumber") {
+    if (value === "" || /^\d+$/.test(value)) {
       setFormData({
         ...formData,
         [name]: value,
       });
     }
-  };
+    return;
+  }
+
+  // Contact Number validation - only numbers
+  if (name === "contactNumber") {
+    if (value === "" || /^\d+$/.test(value)) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+    return;
+  }
+
+  // Email handling
+  if (name === "email" && value && !value.includes("@")) {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  } else {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
+};
 
   const specializations = [
     "Cybersecurity",
@@ -312,6 +366,8 @@ const Register = () => {
                         type="tel"
                         value={formData.contactNumber}
                         onChange={handleChange}
+                          pattern="[0-9]*"
+                        inputMode="numeric"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
                         placeholder="Enter your phone number"
                       />
@@ -327,6 +383,8 @@ const Register = () => {
                         required
                         value={formData.erpNumber}
                         onChange={handleChange}
+                        pattern="[0-9]*"
+                        inputMode="numeric"
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 text-sm transition-all duration-300 bg-white"
                         placeholder="Enter your ERP Number"
                       />
@@ -463,15 +521,21 @@ const Register = () => {
                   </div>
 
                   {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    loading={loading}
-                    className="w-full py-4 text-base font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-primary-600 to-blue-700 hover:from-primary-700 hover:to-blue-800 text-white transform hover:scale-105"
-                  >
-                    <UserPlus className="h-5 w-5 mr-3" />
-                    <Zap className="h-5 w-5 mr-2" />
-                    Create University Account
-                  </Button>
+            <Button
+  type="submit"
+  loading={loading}
+  className="w-full py-4 text-base font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-primary-600 to-blue-700 hover:from-primary-700 hover:to-blue-800 text-white transform hover:scale-105"
+  disabled={loading}
+>
+  {loading ? (
+    <>Loading...</>
+  ) : (
+    <>
+      <UserPlus className="h-5 w-5 mr-3" />
+      Create University Account
+    </>
+  )}
+</Button>
 
                   {/* Login Link */}
                   <div className="text-center pt-6 border-t border-gray-200">

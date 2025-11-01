@@ -144,6 +144,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (data) => {
+    try {
+      const response = await authAPI.register(data);
+      const { user, token } = response.data;
+
+      localStorage.setItem("userToken", token);
+      localStorage.setItem("userData", JSON.stringify(user));
+
+      setUser(user);
+      setIsAuthenticated(true);
+      setUserType("student");
+
+      return { success: true, user };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || "Registration failed",
+      };
+    }
+  };  
+
   const logout = async () => {
     try {
       // console.log('🛠️ Logging out user type:', userType);
@@ -178,6 +199,7 @@ export const AuthProvider = ({ children }) => {
     studentLogin,
     logout,
     checkAuth,
+    register,
   };
 
   return (
