@@ -35,9 +35,20 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const submitData = { ...formData };
+    
+    // Remove password if empty during edit
     if (user && !submitData.password) {
       delete submitData.password;
     }
+    
+    // Remove student-specific fields if role is admin
+    if (submitData.role === 'admin') {
+      delete submitData.sem;
+      delete submitData.erpNumber;
+      delete submitData.collegeName;
+      delete submitData.specialization;
+    }
+    
     onSubmit(submitData);
   };
 
@@ -66,10 +77,32 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    // If role changes to admin, clear student-specific fields
+    if (name === "role" && value === "admin") {
+      setFormData((prev) => ({
+        ...prev,
+        role: value,
+        sem: "",
+        erpNumber: "",
+        collegeName: "",
+        specialization: "",
+      }));
+    } else if (name === "role" && value === "student") {
+      // If changing back to student, set default values
+      setFormData((prev) => ({
+        ...prev,
+        role: value,
+        collegeName: "PIET",
+        specialization: "Cybersecurity",
+        sem: "",
+        erpNumber: "",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const specializations = [
@@ -87,6 +120,8 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
     "Senior",
     "Expert",
   ];
+
+  const isStudent = formData.role === 'student';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -134,8 +169,7 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
           />
           {!user && (
             <p className="mt-1 text-xs text-gray-500">
-              8+ characters with uppercase, lowercase, number & special
-              character
+              8+ characters with uppercase, lowercase, number & special character
             </p>
           )}
         </div>
@@ -157,75 +191,17 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            ERP Number *
-          </label>
-          <input
-            type="text"
-            name="erpNumber"
-            value={formData.erpNumber}
-            onChange={handleChange}
-            required
-            pattern="[0-9]*"
-            inputMode="numeric"
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            College *
+            Role *
           </label>
           <select
-            name="collegeName"
-            value={formData.collegeName}
+            name="role"
+            value={formData.role}
             onChange={handleChange}
             required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           >
-            {collegeNames.map((college) => (
-              <option key={college} value={college}>
-                {college}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Semester *
-          </label>
-          <select
-            name="sem"
-            value={formData.sem}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-          >
-            <option value="">Select Semester</option>
-            {semesters.map((sem) => (
-              <option key={sem} value={sem}>
-                {sem}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Specialization *
-          </label>
-          <select
-            name="specialization"
-            value={formData.specialization}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-          >
-            {specializations.map((spec) => (
-              <option key={spec} value={spec}>
-                {spec}
-              </option>
-            ))}
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
           </select>
         </div>
 
@@ -247,21 +223,83 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
           </select>
         </div>
 
-        {!user && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Role
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="student">Student</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+        {/* Student-specific fields - only show for student role */}
+        {isStudent && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                ERP Number *
+              </label>
+              <input
+                type="text"
+                name="erpNumber"
+                value={formData.erpNumber}
+                onChange={handleChange}
+                required={isStudent}
+                pattern="[0-9]*"
+                inputMode="numeric"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                College *
+              </label>
+              <select
+                name="collegeName"
+                value={formData.collegeName}
+                onChange={handleChange}
+                required={isStudent}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              >
+                {collegeNames.map((college) => (
+                  <option key={college} value={college}>
+                    {college}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Semester *
+              </label>
+              <select
+                name="sem"
+                value={formData.sem}
+                onChange={handleChange}
+                required={isStudent}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">Select Semester</option>
+                {semesters.map((sem) => (
+                  <option key={sem} value={sem}>
+                    {sem}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Specialization *
+              </label>
+              <select
+                name="specialization"
+                value={formData.specialization}
+                onChange={handleChange}
+                required={isStudent}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              >
+                {specializations.map((spec) => (
+                  <option key={spec} value={spec}>
+                    {spec}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
         )}
       </div>
 
@@ -286,9 +324,10 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
             </h3>
             <div className="mt-2 text-sm text-yellow-700">
               <p>
-                Only @paruluniversity.ac.in email addresses are allowed for
-                registration. ERP Number must contain only numbers and is
-                required.
+                {isStudent 
+                  ? "Only @paruluniversity.ac.in email addresses are allowed for registration. ERP Number must contain only numbers and is required."
+                  : "Admin accounts have full access to the platform management features."
+                }
               </p>
             </div>
           </div>
