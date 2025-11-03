@@ -1,27 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import Button from '../ui/Button';
+import React, { useState, useEffect } from "react";
+import Button from "../ui/Button";
 
 const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    contactNumber: '',
-    specialization: 'Network Security',
-    expertiseLevel: 'Beginner',
-    role: 'student'
+    fullName: "",
+    email: "",
+    password: "",
+    contactNumber: "",
+    specialization: "Cybersecurity",
+    sem: "",
+    erpNumber: "",
+    collegeName: "PIET",
+    expertiseLevel: "Beginner",
+    role: "student",
   });
 
   useEffect(() => {
     if (user) {
       setFormData({
-        fullName: user.fullName || '',
-        email: user.email || '',
-        password: '',
-        contactNumber: user.contactNumber || '',
-        specialization: user.specialization || 'Network Security',
-        expertiseLevel: user.expertiseLevel || 'Beginner',
-        role: user.role || 'student'
+        fullName: user.fullName || "",
+        email: user.email || "",
+        password: "",
+        contactNumber: user.contactNumber || "",
+        specialization: user.specialization || "Cybersecurity",
+        sem: user.sem || "",
+        erpNumber: user.erpNumber || "",
+        collegeName: user.collegeName || "PIET",
+        expertiseLevel: user.expertiseLevel || "Beginner",
+        role: user.role || "student",
       });
     }
   }, [user]);
@@ -37,24 +43,58 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+
+    // ERP Number validation - only numbers
+    if (name === "erpNumber") {
+      if (value === "" || /^\d+$/.test(value)) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+      return;
+    }
+
+    // Contact Number validation - only numbers
+    if (name === "contactNumber") {
+      if (value === "" || /^\d+$/.test(value)) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+      return;
+    }
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const Sem = [
-    "3", "4", "5", "6", "7"
-    ];
-    
+  const specializations = [
+    "Cybersecurity",
+    "Artificial Intelligence",
+    "Others",
+  ];
 
-  const expertiseLevels = ['Beginner', 'Junior', 'Intermediate', 'Senior', 'Expert'];
+  const semesters = ["3", "4", "5", "6", "7"];
+  const collegeNames = ["PIET", "PIT", "Other"];
+  const expertiseLevels = [
+    "Beginner",
+    "Junior",
+    "Intermediate",
+    "Senior",
+    "Expert",
+  ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Full Name</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Full Name *
+          </label>
           <input
             type="text"
             name="fullName"
@@ -66,7 +106,9 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Email *
+          </label>
           <input
             type="email"
             name="email"
@@ -79,7 +121,7 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Password {user && '(leave blank to keep current)'}
+            Password {user && "(leave blank to keep current)"} *
           </label>
           <input
             type="password"
@@ -90,50 +132,126 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
             minLength="8"
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
+          {!user && (
+            <p className="mt-1 text-xs text-gray-500">
+              8+ characters with uppercase, lowercase, number & special
+              character
+            </p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Contact Number</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Contact Number
+          </label>
           <input
             type="tel"
             name="contactNumber"
             value={formData.contactNumber}
             onChange={handleChange}
+            pattern="[0-9]*"
+            inputMode="numeric"
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Sem</label>
-          <select
-            name="Sem"
-            value={formData.Sem}
+          <label className="block text-sm font-medium text-gray-700">
+            ERP Number *
+          </label>
+          <input
+            type="text"
+            name="erpNumber"
+            value={formData.erpNumber}
             onChange={handleChange}
+            required
+            pattern="[0-9]*"
+            inputMode="numeric"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            College *
+          </label>
+          <select
+            name="collegeName"
+            value={formData.collegeName}
+            onChange={handleChange}
+            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           >
-            {Sem.map(spec => (
-              <option key={spec} value={spec}>{spec}</option>
+            {collegeNames.map((college) => (
+              <option key={college} value={college}>
+                {college}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Expertise Level</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Semester *
+          </label>
+          <select
+            name="sem"
+            value={formData.sem}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">Select Semester</option>
+            {semesters.map((sem) => (
+              <option key={sem} value={sem}>
+                {sem}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Specialization *
+          </label>
+          <select
+            name="specialization"
+            value={formData.specialization}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+          >
+            {specializations.map((spec) => (
+              <option key={spec} value={spec}>
+                {spec}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Expertise Level
+          </label>
           <select
             name="expertiseLevel"
             value={formData.expertiseLevel}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           >
-            {expertiseLevels.map(level => (
-              <option key={level} value={level}>{level}</option>
+            {expertiseLevels.map((level) => (
+              <option key={level} value={level}>
+                {level}
+              </option>
             ))}
           </select>
         </div>
 
         {!user && (
           <div>
-            <label className="block text-sm font-medium text-gray-700">Role</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Role
+            </label>
             <select
               name="role"
               value={formData.role}
@@ -147,12 +265,42 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
         )}
       </div>
 
+      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg
+              className="h-5 w-5 text-yellow-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-yellow-800">
+              Important Note
+            </h3>
+            <div className="mt-2 text-sm text-yellow-700">
+              <p>
+                Only @paruluniversity.ac.in email addresses are allowed for
+                registration. ERP Number must contain only numbers and is
+                required.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex justify-end space-x-3 pt-6 border-t">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
         <Button type="submit" loading={loading}>
-          {user ? 'Update User' : 'Create User'}
+          {user ? "Update User" : "Create User"}
         </Button>
       </div>
     </form>
