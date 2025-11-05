@@ -229,16 +229,6 @@ const PendingSubmissions = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                {/* Bulk Action Button - Only show when submissions are selected */}
-                {selectedSubmissions.length > 0 && (
-                  <Button
-                    onClick={() => setShowBulkModal(true)}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600 border-0 hover:shadow-lg"
-                  >
-                    <Users className="h-4 w-4" />
-                    <span>Approve {selectedSubmissions.length} Selected</span>
-                  </Button>
-                )}
                 <Button
                   variant="outline"
                   onClick={() => fetchPendingSubmissions()}
@@ -252,35 +242,7 @@ const PendingSubmissions = () => {
           </Card.Content>
         </Card>
 
-        {/* Bulk Selection Info Bar */}
-        {selectedSubmissions.length > 0 && (
-          <Card className="border-0 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 mb-6">
-            <Card.Content className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Users className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-green-800">
-                      {selectedSubmissions.length} submissions selected
-                    </h3>
-                    <p className="text-green-600 text-sm">
-                      Ready for bulk approval
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => setSelectedSubmissions([])}
-                  variant="outline"
-                  className="border-green-300 text-green-700 hover:bg-green-50"
-                >
-                  Clear Selection
-                </Button>
-              </div>
-            </Card.Content>
-          </Card>
-        )}
+
 
         {/* Filters and Search */}
         <Card className="border-0 shadow-xl mb-6 bg-white/80 backdrop-blur-sm">
@@ -382,9 +344,48 @@ const PendingSubmissions = () => {
                     </span>
                   </div>
                 )}
+                 {/* Bulk Action Button - Only show when submissions are selected */}
+                {selectedSubmissions.length > 0 && (
+                  <Button
+                    onClick={() => setShowBulkModal(true)}
+                    className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600 border-0 hover:shadow-lg"
+                  >
+                    <Users className="h-4 w-4" />
+                    <span>Approve {selectedSubmissions.length} Selected</span>
+                  </Button>
+                )}
               </div>
             </div>
           </Card.Header>
+        {/* Bulk Selection Info Bar */}
+        {selectedSubmissions.length > 0 && (
+          <Card className="border-0 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 mb-6">
+            <Card.Content className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Users className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-green-800">
+                      {selectedSubmissions.length} submissions selected
+                    </h3>
+                    <p className="text-green-600 text-sm">
+                      Ready for bulk approval
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setSelectedSubmissions([])}
+                  variant="outline"
+                  className="border-green-300 text-green-700 hover:bg-green-50"
+                >
+                  Clear Selection
+                </Button>
+              </div>
+            </Card.Content>
+          </Card>
+        )}
           <Card.Content className="p-0">
             {loading ? (
               <div className="flex justify-center items-center py-16">
