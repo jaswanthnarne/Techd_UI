@@ -115,4 +115,6 @@ export const submissionAdminAPI = {
     api.get(`/admin/export/ctfs/${ctfId}/participants`, {
       responseType: "blob",
     }),
+  bulkApproveSubmissions: (data) =>
+    api.post("/admin/submissions/bulk-approve", data),
 };

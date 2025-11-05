@@ -43,9 +43,9 @@ const UserForm = ({ user, onSubmit, onCancel, loading = false }) => {
     
     // Remove student-specific fields if role is admin
     if (submitData.role === 'admin') {
+      submitData.collegeName = "Admin";
       delete submitData.sem;
       delete submitData.erpNumber;
-      delete submitData.collegeName;
       delete submitData.specialization;
     }
     
