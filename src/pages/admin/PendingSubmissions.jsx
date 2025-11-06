@@ -26,21 +26,27 @@ import {
   CheckSquare,
   Square,
   Users,
+  Flag,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import BulkApprovalModal from "./BulkApprovalModal"; // Import the bulk modal
+import BulkApprovalModal from "./BulkApprovalModal";
+import { markedSubmissionsAPI } from "../../services/admin";
 
 const PendingSubmissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
-  const [selectedSubmissions, setSelectedSubmissions] = useState([]); // For bulk selection
+  const [selectedSubmissions, setSelectedSubmissions] = useState([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [showBulkModal, setShowBulkModal] = useState(false); // Bulk approval modal
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [pagination, setPagination] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+
+  const [showMarkModal, setShowMarkModal] = useState(false);
+  const [markReason, setMarkReason] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   useEffect(() => {
     fetchPendingSubmissions();
@@ -55,7 +61,7 @@ const PendingSubmissions = () => {
       });
       setSubmissions(response.data.submissions);
       setPagination(response.data.pagination);
-      setSelectedSubmissions([]); // Clear selection on refresh
+      setSelectedSubmissions([]);
     } catch (error) {
       toast.error("Failed to fetch pending submissions");
     } finally {
@@ -158,6 +164,76 @@ const PendingSubmissions = () => {
     }
   };
 
+  // Add this function to handle marking for review directly from the card
+  const handleMarkForReview = async (submission) => {
+    if (!submission) return;
+
+    setSelectedSubmission(submission);
+    setShowMarkModal(true);
+  };
+
+  // In PendingSubmissions.js - Fix the mark for review handler
+
+  const handleConfirmMarkForReview = async () => {
+    if (!selectedSubmission || !markReason.trim()) {
+      toast.error("Please provide a reason for marking this submission");
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      console.log("Marking submission for review:", {
+        submissionId: selectedSubmission._id,
+        reason: markReason,
+      });
+
+      // CORRECTED: Use the right field name that matches backend
+      const response = await markedSubmissionsAPI.markForReview(
+        selectedSubmission._id,
+        {
+          reviewReason: markReason, // Changed from 'reason' to 'reviewReason'
+          additionalNotes: additionalNotes.trim() || undefined,
+        }
+      );
+
+      console.log("Mark for review response:", response);
+
+      toast.success("Submission marked for security review");
+      setShowMarkModal(false);
+      setSelectedSubmission(null);
+      setMarkReason("");
+      setAdditionalNotes("");
+      fetchPendingSubmissions(); // Refresh the pending submissions list
+    } catch (error) {
+      console.error("Mark for review error:", error);
+      const errorMessage =
+        error.response?.data?.error || "Failed to mark submission for review";
+      toast.error(errorMessage);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Add this function to PendingSubmissions.js
+  const handleUnmarkFromPending = async (submissionId) => {
+    if (
+      !confirm("Are you sure you want to unmark this submission from review?")
+    ) {
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      await markedSubmissionsAPI.unmarkReview(submissionId);
+      toast.success("Submission unmarked from review");
+      fetchPendingSubmissions(); // Refresh the list
+    } catch (error) {
+      toast.error("Failed to unmark submission");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handlePageChange = (newPage) => {
     fetchPendingSubmissions(newPage);
   };
@@ -241,8 +317,6 @@ const PendingSubmissions = () => {
             </div>
           </Card.Content>
         </Card>
-
-
 
         {/* Filters and Search */}
         <Card className="border-0 shadow-xl mb-6 bg-white/80 backdrop-blur-sm">
@@ -344,7 +418,8 @@ const PendingSubmissions = () => {
                     </span>
                   </div>
                 )}
-                 {/* Bulk Action Button - Only show when submissions are selected */}
+
+                {/* Bulk Action Button - Only show when submissions are selected */}
                 {selectedSubmissions.length > 0 && (
                   <Button
                     onClick={() => setShowBulkModal(true)}
@@ -357,35 +432,36 @@ const PendingSubmissions = () => {
               </div>
             </div>
           </Card.Header>
-        {/* Bulk Selection Info Bar */}
-        {selectedSubmissions.length > 0 && (
-          <Card className="border-0 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 mb-6">
-            <Card.Content className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Users className="h-5 w-5 text-green-600" />
+
+          {/* Bulk Selection Info Bar */}
+          {selectedSubmissions.length > 0 && (
+            <Card className="border-0 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 mb-6">
+              <Card.Content className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <Users className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-green-800">
+                        {selectedSubmissions.length} submissions selected
+                      </h3>
+                      <p className="text-green-600 text-sm">
+                        Ready for bulk approval
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-green-800">
-                      {selectedSubmissions.length} submissions selected
-                    </h3>
-                    <p className="text-green-600 text-sm">
-                      Ready for bulk approval
-                    </p>
-                  </div>
+                  <Button
+                    onClick={() => setSelectedSubmissions([])}
+                    variant="outline"
+                    className="border-green-300 text-green-700 hover:bg-green-50"
+                  >
+                    Clear Selection
+                  </Button>
                 </div>
-                <Button
-                  onClick={() => setSelectedSubmissions([])}
-                  variant="outline"
-                  className="border-green-300 text-green-700 hover:bg-green-50"
-                >
-                  Clear Selection
-                </Button>
-              </div>
-            </Card.Content>
-          </Card>
-        )}
+              </Card.Content>
+            </Card>
+          )}
           <Card.Content className="p-0">
             {loading ? (
               <div className="flex justify-center items-center py-16">
@@ -405,6 +481,7 @@ const PendingSubmissions = () => {
                   const isSelected = selectedSubmissions.some(
                     (s) => s._id === submission._id
                   );
+                  const isMarkedForReview = submission.markedForReview;
                   return (
                     <div
                       key={submission._id}
@@ -441,10 +518,17 @@ const PendingSubmissions = () => {
                                   </p>
                                 </div>
                               </div>
-                              <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-lg">
-                                <Clock className="h-4 w-4 mr-2" />
-                                Awaiting Judgment
-                              </span>
+                              {isMarkedForReview ? (
+                                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg">
+                                  <Flag className="h-4 w-4 mr-2" />
+                                  Marked for Review
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-lg">
+                                  <Clock className="h-4 w-4 mr-2" />
+                                  Awaiting Judgment
+                                </span>
+                              )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -505,6 +589,7 @@ const PendingSubmissions = () => {
                           </div>
                         </div>
 
+                        {/* Action Buttons - Now with Mark for Review button */}
                         <div className="flex lg:flex-col space-x-3 lg:space-x-0 lg:space-y-3">
                           <Button
                             onClick={() => handleViewSubmission(submission._id)}
@@ -513,6 +598,39 @@ const PendingSubmissions = () => {
                             <Eye className="h-4 w-4" />
                             <span>Review</span>
                           </Button>
+
+                          {/* Mark for Review Button */}
+                          {/* <Button
+                            onClick={() => handleMarkForReview(submission)}
+                            className="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-orange-500 border-0 hover:shadow-lg min-w-[120px] justify-center"
+                          >
+                            <Flag className="h-4 w-4" />
+                            <span>Mark for Review</span>
+                          </Button> */}
+
+                          {/* Only show Mark for Review button if NOT already marked */}
+                          {!isMarkedForReview && (
+                            <Button
+                              onClick={() => handleMarkForReview(submission)}
+                              className="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-orange-500 border-0 hover:shadow-lg min-w-[120px] justify-center"
+                            >
+                              <Flag className="h-4 w-4" />
+                              <span>Mark for Review</span>
+                            </Button>
+                          )}
+
+                          {/* Show Unmark button if already marked */}
+                          {isMarkedForReview && (
+                            <Button
+                              onClick={() =>
+                                handleUnmarkFromPending(submission._id)
+                              }
+                              className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-500 border-0 hover:shadow-lg min-w-[120px] justify-center"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                              <span>Unmark</span>
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -611,6 +729,24 @@ const PendingSubmissions = () => {
         onClose={() => setShowBulkModal(false)}
         selectedSubmissions={selectedSubmissions}
         onBulkApprove={handleBulkApprove}
+        loading={actionLoading}
+      />
+
+      {/* Mark for Review Modal */}
+      <MarkForReviewModal
+        isOpen={showMarkModal}
+        onClose={() => {
+          setShowMarkModal(false);
+          setSelectedSubmission(null);
+          setMarkReason("");
+          setAdditionalNotes("");
+        }}
+        submission={selectedSubmission}
+        reason={markReason}
+        setReason={setMarkReason}
+        notes={additionalNotes}
+        setNotes={setAdditionalNotes}
+        onMark={handleConfirmMarkForReview}
         loading={actionLoading}
       />
     </Layout>
@@ -879,6 +1015,85 @@ const ReviewModal = ({
               </div>
             </Card.Content>
           </Card>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+// MarkForReviewModal Component
+const MarkForReviewModal = ({
+  isOpen,
+  onClose,
+  submission,
+  reason,
+  setReason,
+  notes,
+  setNotes,
+  onMark,
+  loading,
+}) => {
+  if (!submission) return null;
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Mark Submission for Security Review"
+    >
+      <div className="space-y-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center space-x-3">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div>
+              <h4 className="font-bold text-red-800">Security Review</h4>
+              <p className="text-red-700 text-sm mt-1">
+                This will flag the submission for additional security review and
+                notify the user.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Review Reason <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            rows={3}
+            className="block w-full border border-gray-300 rounded-lg shadow-sm px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-vertical"
+            placeholder="Explain why this submission needs security review (e.g., suspicious activity, potential cheating, etc.)"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Additional Notes (Optional)
+          </label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            className="block w-full border border-gray-300 rounded-lg shadow-sm px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-vertical"
+            placeholder="Any additional observations or context..."
+          />
+        </div>
+
+        <div className="flex justify-end space-x-3">
+          <Button onClick={onClose} variant="outline" disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={onMark}
+            loading={loading}
+            disabled={!reason.trim()}
+            className="bg-red-600 hover:bg-red-700 border-0"
+          >
+            <Flag className="h-4 w-4 mr-2" />
+            Mark for Review
+          </Button>
         </div>
       </div>
     </Modal>

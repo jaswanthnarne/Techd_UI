@@ -118,3 +118,22 @@ export const submissionAdminAPI = {
   bulkApproveSubmissions: (data) =>
     api.post("/admin/submissions/bulk-approve", data),
 };
+
+// In your admin.js file, ensure marked submissions API is properly defined
+export const markedSubmissionsAPI = {
+  markForReview: (submissionId, data) => {
+    api.post(`/admin/submissions/${submissionId}/mark-for-review`, data);
+    console.log("mark for review api called", data);
+  },
+
+  unmarkReview: (submissionId) =>
+    api.post(`/admin/submissions/${submissionId}/unmark-review`),
+
+  addReviewNote: (submissionId, data) =>
+    api.post(`/admin/submissions/${submissionId}/review-notes, data`),
+
+  getMarkedSubmissions: (params) =>
+    api.get("/admin/marked-for-review/submissions", { params }),
+
+  getMarkedStats: () => api.get(`/admin/stats/submissions`),
+};

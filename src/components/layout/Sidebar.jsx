@@ -147,6 +147,11 @@ const Sidebar = ({ currentPath }) => {
       href: "/admin/submission-analytics",
       icon: BarChart3,
     },
+    {
+      name: "Marked Submissions",
+      href: "/admin/marked-submissions",
+      icon: Flag,
+    },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];

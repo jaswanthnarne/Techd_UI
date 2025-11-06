@@ -17,6 +17,8 @@ import Settings from "./pages/admin/Settings";
 import AdminSubmissions from "../src/pages/admin/AdminSubmissions";
 import PendingSubmissions from "../src/pages/admin/PendingSubmissions";
 import SubmissionAnalytics from "../src/pages/admin/SubmissionAnalytics";
+import MarkedSubmissions from "../src/pages/admin/MarkedSubmissions";
+
 
 // Student Pages
 import StudentDashboard from "./pages/student/Dashboard";
@@ -120,6 +122,8 @@ function App() {
                 </PublicRoute>
               }
             />
+
+            
             <Route
               path="/forgot-password"
               element={
@@ -192,6 +196,14 @@ function App() {
               element={
                 <AdminRoute>
                   <SubmissionAnalytics />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/marked-submissions"
+              element={
+                <AdminRoute>
+                  <MarkedSubmissions />
                 </AdminRoute>
               }
             />
