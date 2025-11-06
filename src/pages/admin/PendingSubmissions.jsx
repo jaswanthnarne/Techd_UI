@@ -182,11 +182,6 @@ const PendingSubmissions = () => {
 
     try {
       setActionLoading(true);
-      console.log("Marking submission for review:", {
-        submissionId: selectedSubmission._id,
-        reason: markReason,
-      });
-
       // CORRECTED: Use the right field name that matches backend
       const response = await markedSubmissionsAPI.markForReview(
         selectedSubmission._id,
@@ -196,14 +191,26 @@ const PendingSubmissions = () => {
         }
       );
 
-      console.log("Mark for review response:", response);
+      // ✅ IMMEDIATELY UPDATE LOCAL STATE
+      setSubmissions((prevSubmissions) =>
+        prevSubmissions.map((sub) =>
+          sub._id === selectedSubmission._id
+            ? {
+                ...sub,
+                markedForReview: true,
+                reviewReason: markReason,
+                markedAt: new Date().toISOString(),
+              }
+            : sub
+        )
+      );
 
       toast.success("Submission marked for security review");
       setShowMarkModal(false);
       setSelectedSubmission(null);
       setMarkReason("");
       setAdditionalNotes("");
-      fetchPendingSubmissions(); // Refresh the pending submissions list
+      // fetchPendingSubmissions(); // Refresh the pending submissions list
     } catch (error) {
       console.error("Mark for review error:", error);
       const errorMessage =
@@ -225,8 +232,22 @@ const PendingSubmissions = () => {
     try {
       setActionLoading(true);
       await markedSubmissionsAPI.unmarkReview(submissionId);
+
+      setSubmissions((prevSubmissions) =>
+        prevSubmissions.map((sub) =>
+          sub._id === submissionId
+            ? {
+                ...sub,
+                markedForReview: false,
+                reviewReason: "",
+                markedAt: null,
+                markedBy: null,
+              }
+            : sub
+        )
+      );
       toast.success("Submission unmarked from review");
-      fetchPendingSubmissions(); // Refresh the list
+      // fetchPendingSubmissions(); // Refresh the list
     } catch (error) {
       toast.error("Failed to unmark submission");
     } finally {
