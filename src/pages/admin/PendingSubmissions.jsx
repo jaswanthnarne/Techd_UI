@@ -59,7 +59,11 @@ const PendingSubmissions = () => {
         page,
         limit: 20,
       });
-      setSubmissions(response.data.submissions);
+      // Filter out any marked submissions on the frontend as a safety measure
+      const nonMarkedSubmissions = response.data.submissions.filter(
+        (submission) => !submission.markedForReview
+      );
+      setSubmissions(nonMarkedSubmissions);
       setPagination(response.data.pagination);
       setSelectedSubmissions([]);
     } catch (error) {
@@ -186,7 +190,7 @@ const PendingSubmissions = () => {
       const response = await markedSubmissionsAPI.markForReview(
         selectedSubmission._id,
         {
-          reviewReason: markReason, // Changed from 'reason' to 'reviewReason'
+          reviewReason: markReason,
           additionalNotes: additionalNotes.trim() || undefined,
         }
       );
@@ -221,7 +225,40 @@ const PendingSubmissions = () => {
     }
   };
 
-  // Add this function to PendingSubmissions.js
+  // // Add this function to PendingSubmissions.js
+  // const handleUnmarkFromPending = async (submissionId) => {
+  //   if (
+  //     !confirm("Are you sure you want to unmark this submission from review?")
+  //   ) {
+  //     return;
+  //   }
+
+  //   try {
+  //     setActionLoading(true);
+  //     await markedSubmissionsAPI.unmarkReview(submissionId);
+
+  //     setSubmissions((prevSubmissions) =>
+  //       prevSubmissions.map((sub) =>
+  //         sub._id === submissionId
+  //           ? {
+  //               ...sub,
+  //               markedForReview: false,
+  //               reviewReason: "",
+  //               markedAt: null,
+  //               markedBy: null,
+  //             }
+  //           : sub
+  //       )
+  //     );
+  //     toast.success("Submission unmarked from review");
+  //     // fetchPendingSubmissions(); // Refresh the list
+  //   } catch (error) {
+  //     toast.error("Failed to unmark submission");
+  //   } finally {
+  //     setActionLoading(false);
+  //   }
+  // };
+
   const handleUnmarkFromPending = async (submissionId) => {
     if (
       !confirm("Are you sure you want to unmark this submission from review?")
@@ -233,21 +270,18 @@ const PendingSubmissions = () => {
       setActionLoading(true);
       await markedSubmissionsAPI.unmarkReview(submissionId);
 
+      // Remove from the list since it should now appear in pending submissions
       setSubmissions((prevSubmissions) =>
-        prevSubmissions.map((sub) =>
-          sub._id === submissionId
-            ? {
-                ...sub,
-                markedForReview: false,
-                reviewReason: "",
-                markedAt: null,
-                markedBy: null,
-              }
-            : sub
-        )
+        prevSubmissions.filter((sub) => sub._id !== submissionId)
       );
+
+      // Update pagination
+      setPagination((prev) => ({
+        ...prev,
+        total: prev.total - 1,
+      }));
+
       toast.success("Submission unmarked from review");
-      // fetchPendingSubmissions(); // Refresh the list
     } catch (error) {
       toast.error("Failed to unmark submission");
     } finally {
@@ -261,6 +295,10 @@ const PendingSubmissions = () => {
 
   // Filter submissions based on search and filters
   const filteredSubmissions = submissions.filter((submission) => {
+    // Ensure only non-marked submissions are shown
+    if (submission.markedForReview) {
+      return false;
+    }
     const matchesSearch =
       submission.user?.fullName
         ?.toLowerCase()

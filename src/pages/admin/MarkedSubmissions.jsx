@@ -154,9 +154,20 @@ const MarkedSubmissions = () => {
     try {
       setActionLoading(true);
       await markedSubmissionsAPI.unmarkReview(submissionId);
+
+      // Remove from marked submissions list immediately
+      setSubmissions((prevSubmissions) =>
+        prevSubmissions.filter((sub) => sub._id !== submissionId)
+      );
+
+      // Update pagination
+      setPagination((prev) => ({
+        ...prev,
+        total: prev.total - 1,
+      }));
+
       toast.success("Submission unmarked from review");
-      fetchMarkedSubmissions();
-      fetchMarkedStats();
+      fetchMarkedStats(); // Refresh stats
     } catch (error) {
       toast.error("Failed to unmark submission");
     } finally {
