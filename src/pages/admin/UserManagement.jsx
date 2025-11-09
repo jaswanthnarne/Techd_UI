@@ -581,7 +581,7 @@ const UserManagement = () => {
                           Semester:
                         </span>
                         <span className="bg-white px-3 py-1 rounded-lg border border-gray-200">
-                          {user.Sem || "N/A"}
+                          {user.sem || "N/A"}
                         </span>
                       </p>
                       <p className="flex items-center space-x-2">

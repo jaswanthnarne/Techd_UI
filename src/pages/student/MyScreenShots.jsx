@@ -537,6 +537,12 @@ const MyScreenshots = () => {
                         {selectedScreenshot.ctf?.points || 0}
                       </span>
                     </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-gray-600">CTF Flag</span>
+                      <span className="font-semibold">
+                        {selectedScreenshot.flag || "Unknown Flag"}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
