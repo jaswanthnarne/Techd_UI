@@ -36,16 +36,16 @@ const Help = () => {
   const contactInfo = {
     technicalTeam: {
       name: "Code Wizards ",
-      email: "wizards@techdefense.com",
-      phone: "+91 93905 26759",
+      email: "rohan.m@techdefence.com",
+      phone: "+91 91167 90656",
       icon: Zap,
       color: "from-blue-500 to-purple-600",
       description: "For when the magic stops working",
     },
     adminTeam: {
       name: "CTF Overlords",
-      email: "overlords@techdefense.com",
-      phone: "+91 93905 26759",
+      email: "rohan.m@techdefence.com",
+      phone: "+91 91167 90656",
       icon: Crown,
       color: "from-green-500 to-emerald-600",
       description: "Keepers of challenges and points",

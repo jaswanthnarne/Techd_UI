@@ -71,7 +71,6 @@ const MarkedSubmissions = () => {
         limit: filters.limit,
       });
 
-      console.log("Marked submissions response:", response);
 
       // Handle the response format consistently
       if (response.data && response.data.success) {
