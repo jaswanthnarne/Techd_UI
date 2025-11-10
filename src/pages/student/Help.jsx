@@ -26,7 +26,6 @@ import {
   Brain,
   Shield,
   Search,
-  Phone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -36,7 +35,7 @@ const Help = () => {
 
   const contactInfo = {
     technicalTeam: {
-      name: "Code Wizards",
+      name: "Code Wizards ",
       email: "rohan.m@techdefence.com",
       phone: "+919116790656",
       icon: Zap,
@@ -152,7 +151,7 @@ const Help = () => {
       ? `mailto:${email}?subject=${encodeURIComponent(subject)}`
       : `mailto:${email}`;
     
-    // Create a temporary anchor element to trigger the download
+    // Create a temporary anchor element for better compatibility
     const link = document.createElement('a');
     link.href = mailtoLink;
     link.target = '_blank';
@@ -168,17 +167,6 @@ const Help = () => {
     
     // Open in new tab for better cross-platform compatibility
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const handlePhoneClick = (phoneNumber) => {
-    const telLink = `tel:${phoneNumber}`;
-    
-    // Create a temporary anchor element
-    const link = document.createElement('a');
-    link.href = telLink;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const toggleFaq = (index) => {
@@ -254,19 +242,6 @@ const Help = () => {
                       <p className="text-gray-600 mb-6 italic">
                         {team.description}
                       </p>
-                      
-                      {/* Contact Info Display */}
-                      <div className="mb-6 space-y-2 text-sm text-gray-600">
-                        <div className="flex items-center justify-center space-x-2">
-                          <Mail className="h-4 w-4" />
-                          <span>{team.email}</span>
-                        </div>
-                        <div className="flex items-center justify-center space-x-2">
-                          <Phone className="h-4 w-4" />
-                          <span>{team.phone}</span>
-                        </div>
-                      </div>
-
                       <div className="space-y-3">
                         <Button
                           onClick={() =>
@@ -278,28 +253,16 @@ const Help = () => {
                           className={`w-full bg-gradient-to-r ${team.color} border-0 text-white hover:shadow-lg transition-all`}
                         >
                           <Mail className="h-4 w-4 mr-2" />
-                          Send Email
+                          Send Magical Email
                         </Button>
-                        
-                        <div className="grid grid-cols-2 gap-3">
-                          <Button
-                            onClick={() => handleWhatsAppClick(team.phone)}
-                            variant="outline"
-                            className="w-full border-2 hover:shadow-lg transition-all"
-                          >
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            WhatsApp
-                          </Button>
-                          
-                          <Button
-                            onClick={() => handlePhoneClick(team.phone)}
-                            variant="outline"
-                            className="w-full border-2 hover:shadow-lg transition-all"
-                          >
-                            <Phone className="h-4 w-4 mr-2" />
-                            Call
-                          </Button>
-                        </div>
+                        <Button
+                          onClick={() => handleWhatsAppClick(team.phone)}
+                          variant="outline"
+                          className="w-full border-2 hover:shadow-lg transition-all"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          WhatsApp Spell
+                        </Button>
                       </div>
                     </Card.Content>
                   </Card>
@@ -470,27 +433,20 @@ const Help = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
-            className="text-center"
           >
             <Card className="border-0 bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-2xl">
-              <Card.Content className="p-6">
-                <div className="flex items-center justify-center space-x-3 mb-2">
+              <Card.Content className="p-6 text-center">
+                <div className="flex items-center justify-center space-x-3">
                   <AlertTriangle className="h-6 w-6" />
                   <span className="font-semibold text-lg">
                     Platform completely down? CTF ending in 5 minutes?
                   </span>
                   <AlertTriangle className="h-6 w-6" />
                 </div>
-                <p className="text-red-100 mb-4">
-                  Use WhatsApp for immediate assistance. We're probably already fixing it.
+                <p className="mt-2 text-red-100">
+                  Use WhatsApp for immediate assistance. We're probably already
+                  fixing it.
                 </p>
-                <Button
-                  onClick={() => handleWhatsAppClick(contactInfo.technicalTeam.phone)}
-                  className="bg-white text-red-600 hover:bg-gray-100 border-0 font-semibold"
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Emergency WhatsApp
-                </Button>
               </Card.Content>
             </Card>
           </motion.div>
