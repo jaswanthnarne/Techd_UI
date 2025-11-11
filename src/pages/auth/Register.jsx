@@ -557,7 +557,7 @@ const handleChange = (e) => {
                     </div>
                   </div>
                   
-                  {/* reCAPTCHA Component */}
+                  {/* reCAPTCHA Component in ui  */}
                   <div className="space-y-2">
                     <RecaptchaWrapper
                       onVerify={handleRecaptchaVerify}
