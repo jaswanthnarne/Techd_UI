@@ -259,5 +259,5 @@ const Sidebar = ({ currentPath }) => {
     </>
   );
 };
-
+//this is a new comment
 export default Sidebar;
