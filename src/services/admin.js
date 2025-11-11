@@ -137,3 +137,14 @@ export const markedSubmissionsAPI = {
 
   getMarkedStats: () => api.get(`/admin/stats/submissions`),
 };
+
+// Leaderboard & Student Analytics
+export const leaderboardAPI = {
+  getLeaderboard: (params) => api.get("/admin/leaderboard", { params }),
+  getStudentAnalytics: (userId) => api.get(`/admin/students/${userId}/analytics`),
+  exportLeaderboard: (params) => 
+    api.get("/admin/export/leaderboard", { 
+      params,
+      responseType: "blob" 
+    }),
+};
