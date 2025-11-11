@@ -562,6 +562,7 @@ const handleChange = (e) => {
                     <RecaptchaWrapper
                       onVerify={handleRecaptchaVerify}
                       onError={handleRecaptchaError}
+                      
                     />
                     {recaptchaError && (
                       <div className="text-center">
