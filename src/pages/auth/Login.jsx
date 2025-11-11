@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
-import {RecaptchaWrapper} from "./RecaptchaWrapper";
+import RecaptchaWrapper from "./RecaptchaWrapper";
 import {
   Eye,
   EyeOff,
