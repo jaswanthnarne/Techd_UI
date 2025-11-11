@@ -256,6 +256,29 @@ const UserManagement = () => {
     );
   }, []);
 
+  // Memoized export function
+const exportAllUsers = useCallback(async () => {
+  try {
+    const response = await userAPI.exportUsers();
+    
+    // Create a blob from the response data
+    const blob = new Blob([response.data], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users-export-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    toast.success('Users exported successfully');
+  } catch (error) {
+    console.error('Export users error:', error);
+    toast.error('Failed to export users');
+  }
+}, []);
+
   const getStatusBadge = useCallback((isActive) => {
     return (
       <span
@@ -702,6 +725,16 @@ const UserManagement = () => {
                   <RefreshCw className="h-4 w-4" />
                   <span>Refresh Data</span>
                 </Button>
+
+                 <Button
+          variant="outline"
+          onClick={exportAllUsers}
+          className="flex items-center space-x-2 border-2"
+        >
+          <Download className="h-4 w-4" />
+          <span>Export Users</span>
+        </Button>
+                
 
                 <Button
                   onClick={() => setShowModal(true)}

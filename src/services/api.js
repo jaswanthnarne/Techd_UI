@@ -25,18 +25,14 @@ api.interceptors.request.use(
       if (adminToken) {
         config.headers.Authorization = `Bearer ${adminToken}`;
         // console.log('🔐 Added admin token to request');
-      } else {
-        console.log('❌ No admin token found for admin route');
-      }
+      } 
     } else {
       // For student routes - check both possible token locations
       const studentToken = localStorage.getItem('token') || localStorage.getItem('userToken');
       if (studentToken) {
         config.headers.Authorization = `Bearer ${studentToken}`;
         // console.log('🔐 Added student token to request');
-      } else {
-        console.log('❌ No student token found for student route');
-      }
+      } 
     }
     
     return config;

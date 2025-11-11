@@ -5,7 +5,6 @@ const RecaptchaWrapper = ({ onVerify, onError }) => {
   const recaptchaRef = React.useRef();
 
   const handleRecaptchaChange = (token) => {
-    console.log("reCAPTCHA token received:", token);
     if (token) {
       onVerify(token);
     } else {
@@ -19,7 +18,6 @@ const RecaptchaWrapper = ({ onVerify, onError }) => {
   };
 
   const handleRecaptchaExpired = () => {
-    console.log("reCAPTCHA expired");
     onError("reCAPTCHA expired. Please verify again.");
   };
 
