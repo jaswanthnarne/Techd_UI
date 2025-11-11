@@ -18,6 +18,7 @@ import AdminSubmissions from "../src/pages/admin/AdminSubmissions";
 import PendingSubmissions from "../src/pages/admin/PendingSubmissions";
 import SubmissionAnalytics from "../src/pages/admin/SubmissionAnalytics";
 import MarkedSubmissions from "../src/pages/admin/MarkedSubmissions";
+import AdminLeaderboard from "./pages/admin/Leaderboard";
 
 
 // Student Pages
@@ -183,6 +184,15 @@ function App() {
                 </AdminRoute>
               }
             />
+            <Route
+              path="/admin/leaderboard"
+              element={
+                <AdminRoute>
+                  <AdminLeaderboard />
+                </AdminRoute>
+              }
+            />
+
             <Route
               path="/admin/submissions/pending"
               element={
