@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { adminAuth } from '../services/admin';
 import { authAPI } from '../services/auth';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -84,7 +85,11 @@ export const AuthProvider = ({ children }) => {
   const adminLogin = async (credentials) => {
     try {
       // console.log('🛠️ Attempting admin login with:', credentials);
-      const response = await adminAuth.login(credentials);
+      const response = await adminAuth.login({
+        email: credentials.email,
+        password: credentials.password,
+        recaptchaToken: credentials.recaptchaToken
+      });
       // console.log('✅ Admin login response:', response);
       
       const { admin, user, token } = response.data;
@@ -97,6 +102,8 @@ export const AuthProvider = ({ children }) => {
       // console.log('💾 Storing admin token and user data');
       localStorage.setItem('adminToken', token);
       localStorage.setItem('adminUser', JSON.stringify(adminUser));
+
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setUser(adminUser);
       setIsAuthenticated(true);
@@ -160,6 +167,8 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("userToken", token);
       localStorage.setItem("userData", JSON.stringify(user));
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       setUser(user);
       setIsAuthenticated(true);

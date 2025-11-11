@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
+import {recaptchaWrapper} from "./RecaptchaWrapper";
+import {toast} from "react-hot-toast";
 import {
   Eye,
   EyeOff,
@@ -34,6 +36,8 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [recaptchaError, setRecaptchaError] = useState("");
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -49,12 +53,28 @@ const validateContactNumber = (contactNumber) => {
   const phoneRegex = /^\d+$/;
   return phoneRegex.test(contactNumber);
 };
+const handleRecaptchaVerify = (token) => {
+    setRecaptchaToken(token);
+    setRecaptchaError("");
+  };
 
+  const handleRecaptchaError = (error) => {
+    console.error("reCAPTCHA Error:", error);
+    setRecaptchaError("reCAPTCHA verification failed. Please try again.");
+    setRecaptchaToken("");
+  };
 // Update the handleSubmit function
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   setError("");
+
+  // Check reCAPTCHA
+  if (!recaptchaToken) {
+    setError("Please complete the reCAPTCHA verification");
+    setLoading(false);
+    return;
+  }
 
   // Validate required fields
   if (
@@ -115,11 +135,17 @@ const handleSubmit = async (e) => {
 
   const { confirmPassword, ...submitData } = formData;
 
+  const registrationData = {
+    ...submitData,
+    recaptchaToken: recaptchaToken,
+  };
+
 
 
   try {
-    const result = await register(submitData);
+    const result = await register(registrationData);
     if (result.success) {
+      toast.success("Registration successful! Redirecting to dashboard...");
       navigate("/student");
     } else {
       console.error("Registration failed:", result);
@@ -529,6 +555,28 @@ const handleChange = (e) => {
                         </button>
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* reCAPTCHA Component */}
+                  <div className="space-y-2">
+                    <RecaptchaWrapper
+                      onVerify={handleRecaptchaVerify}
+                      onError={handleRecaptchaError}
+                    />
+                    {recaptchaError && (
+                      <div className="text-center">
+                        <p className="text-sm text-red-600 bg-red-50 py-2 px-4 rounded-lg border border-red-200">
+                          {recaptchaError}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => window.location.reload()}
+                          className="mt-2 text-sm text-primary-600 hover:text-primary-500 font-semibold"
+                        >
+                          Refresh Page
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Submit Button */}

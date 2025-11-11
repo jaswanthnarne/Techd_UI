@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
+import {recaptchaWrapper} from "./RecaptchaWrapper";
 import {
   Eye,
   EyeOff,
@@ -27,42 +28,74 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState("student");
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+  const [recaptchaError, setRecaptchaError] = useState('');
 
   const { adminLogin, studentLogin } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleRecaptchaVerify = (token) => {
+    setRecaptchaToken(token);
+    setRecaptchaError("");
+  };
+
+  const handleRecaptchaError = (error) => {
+    console.error("reCAPTCHA Error:", error);
+    setRecaptchaError("reCAPTCHA verification failed. Please try again.");
+    setRecaptchaToken("");
+  };
+
+const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!credentials.email || !credentials.password){
-      toast.error("Please enter both email and password");
+    setLoading(true);
+
+    // Validation
+    if (!recaptchaToken) {
+      toast.error("Please complete the reCAPTCHA verification");
+      setLoading(false);
       return;
     }
-    setLoading(true);
-     
+
+    if (!credentials.email || !credentials.password) {
+      toast.error("Please enter both email and password");
+      setLoading(false);
+      return;
+    }
 
     try {
       let result;
+      const loginData = {
+        email: credentials.email,
+        password: credentials.password,
+        recaptchaToken: recaptchaToken,
+      };
+
 
       if (userType === "admin") {
-        result = await adminLogin(credentials);
+        result = await adminLogin(loginData);
+
         if (result.success) {
           toast.success("Admin login successful!");
           navigate("/admin");
         } else {
           toast.error(result.error || "Admin login failed");
+          setRecaptchaToken("");
         }
       } else {
-        result = await studentLogin(credentials);
+        result = await studentLogin(loginData);
+
         if (result.success) {
           toast.success("Login successful!");
           navigate("/student");
         } else {
-          toast.error("Invalid username or password");
+          toast.error(result.error || "Login failed");
+          setRecaptchaToken("");
         }
       }
     } catch (error) {
+      console.error("Login submission error:", error);
       toast.error("An unexpected error occurred");
-      console.error("Login error:", error);
+      setRecaptchaToken("");
     } finally {
       setLoading(false);
     }
@@ -75,7 +108,7 @@ const Login = () => {
     });
   };
 
-  return (
+return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl">
         {/* Main Container */}
@@ -273,6 +306,28 @@ const Login = () => {
                         )}
                       </button>
                     </div>
+                  </div>
+
+                  {/* reCAPTCHA Component */}
+                  <div className="space-y-2">
+                    <RecaptchaWrapper
+                      onVerify={handleRecaptchaVerify}
+                      onError={handleRecaptchaError}
+                    />
+                    {recaptchaError && (
+                      <div className="text-center">
+                        <p className="text-sm text-red-600 bg-red-50 py-2 px-4 rounded-lg border border-red-200">
+                          {recaptchaError}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => window.location.reload()}
+                          className="mt-2 text-sm text-primary-600 hover:text-primary-500 font-semibold"
+                        >
+                          Refresh Page
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Links */}
